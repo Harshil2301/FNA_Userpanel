@@ -74,25 +74,50 @@ const Sidebar = () => {
       <Box
         sx={{
           position: 'fixed',
-          top: '35px',
-          left: '20px',
+          top: '36px',
+          left: '16px',
           zIndex: 1301,
-          display: 'flex',
+          display: showSidebar ? 'none' : 'flex', 
           justifyContent: 'center',
           alignItems: 'center',
           cursor: 'pointer',
-          width: 40,
-          height: 40,
-          borderRadius: '8px',
-          backgroundColor: 'rgba(40, 40, 40, 0.4)',
+          width: 32,
+          height: 32,
+          borderRadius: '4px',
+          backgroundColor: 'rgba(40, 40, 40, 0.7)',
           transition: 'background-color 0.2s ease',
           '&:hover': {
-            backgroundColor: 'rgba(60, 60, 60, 0.7)',
+            backgroundColor: 'rgba(60, 60, 60, 0.9)',
           }
         }}
         onClick={handleToggleSidebar}
       >
-        {showSidebar ? <FaTimesCircle size={22} color="rgba(255,255,255,0.9)" /> : <FaBars size={22} color="rgba(255,255,255,0.9)" />}
+        <FaBars size={18} color="rgba(255,255,255,0.9)" />
+      </Box>
+
+      {/* Close button (only visible when sidebar is open) */}
+      <Box
+        sx={{
+          position: 'fixed',
+          top: '36px',
+          left: '16px', // Same position as hamburger
+          zIndex: 1301,
+          display: showSidebar ? 'flex' : 'none', // Toggle visibility instead of position
+          justifyContent: 'center',
+          alignItems: 'center',
+          cursor: 'pointer',
+          width: 32,
+          height: 32,
+          borderRadius: '4px',
+          backgroundColor: 'rgba(40, 40, 40, 0.7)',
+          transition: 'background-color 0.2s ease',
+          '&:hover': {
+            backgroundColor: 'rgba(60, 60, 60, 0.9)',
+          }
+        }}
+        onClick={handleToggleSidebar}
+      >
+        <FaTimesCircle size={18} color="rgba(255,255,255,0.9)" />
       </Box>
 
       {/* Sidebar */}
