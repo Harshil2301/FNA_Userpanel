@@ -1,0 +1,348 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #000000;
+  }
+  
+  .navbar {
+    background-color: #000000; 
+    padding: 0.5rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    transition: background-color 0.3s ease;
+  }
+  
+  .navbar-logo {
+    user-select: none;
+  }
+  
+  .navbar-logo-img {
+    height: 40px;
+    width: auto;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+  
+  /* .navbar-logo-img:hover {
+    transform: scale(1.1);
+  } */
+  .navbar-logo-img:hover {
+    transform: scale(1.1); 
+  }
+  
+  .navbar-logo:hover {
+    color: #00ffcc; 
+  }
+  
+  .navbar-list {
+    list-style-type: none;
+    display: flex;
+  }
+  
+  .navbar-list li {
+    display: inline-block;
+    margin-left: 20px;
+    padding: 0.5rem 1rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-radius 0.3s ease;
+    border-radius: 12px;
+  }
+  
+  .navbar-list li:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(255, 255, 255, 0.6);
+    background-color: rgba(0, 255, 153, 0.1);
+  }
+  
+  .navbar-list li a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+  
+  .navbar-list li a:hover {
+    color: #ffffff;
+  }
+  
+  /* Mobile Menu */
+  .bm-menu-wrap {
+    background: rgba(0, 0, 0, 0.85);
+  }
+  
+  /* Ensure the burger button is hidden on desktop screens */
+  .bm-burger-button {
+    position: fixed;
+    width: 36px;
+    height: 30px;
+    right: 25px;
+    top: 25px;
+    transition: transform 0.3s ease;
+  }
+  
+  /* Show the burger button only on screens smaller than 769px */
+  @media (min-width: 769px) {
+    .bm-burger-button {
+      display: none;
+    }
+  }
+  
+  .bm-burger-button:hover {
+    transform: rotate(90deg);
+  }
+  
+  .bm-burger-bars {
+    background: #00ff99;
+  }
+  
+  .bm-cross-button {
+    height: 24px;
+    width: 24px;
+  }
+  
+  .bm-cross {
+    background: #00ff99;
+  }
+  
+  .bm-menu {
+    background: #000000; /* Pure black for menu */
+    padding: 2em 1.5em 0;
+    font-size: 1.15em;
+  }
+  .bm-menu-wrap {
+    position: fixed;
+    top: 0;
+    right: 0; /* Fix the menu to the right side */
+    height: 100vh; /* Full screen height */
+    width: 100vw; /* Full screen width */
+    background: rgba(0, 0, 0, 0.85); /* Ensure the background is dark */
+    z-index: 1000;
+  }
+  
+  .bm-menu {
+    background: #000000;
+    padding: 2em 1.5em 0;
+    font-size: 1.15em;
+    width: 100%; /* Adjust the width of the menu */
+    position: absolute;
+    right: 0; /* Ensure the menu starts from the right side */
+  }
+  
+  .menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #fff;
+  }
+  
+  .menu-content {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .menu-item {
+    display: block;
+    text-decoration: none;
+    color: #fff;
+    margin-bottom: 1.2rem;
+    padding: 0.5rem 0;
+    transition: transform 0.3s ease, color 0.3s ease, border-radius 0.3s ease;
+    font-weight: 500;
+    font-size: 1.1rem;
+    position: relative;
+    border-radius: 12px; 
+  }
+  
+  .menu-item:hover {
+    color: #00ff99;
+    transform: translateY(-5px);
+    background-color: rgba(0, 255, 153, 0.1);
+  }
+  
+  .menu-footer {
+    margin-top: auto;
+    padding: 1rem 0;
+    border-top: 1px solid #333;
+  }
+  
+  .footer-text {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #777;
+  }
+  
+  .social-icons {
+    display: flex;
+    justify-content: center;
+    margin-top: 0.5rem;
+  }
+  
+  .social-icons a {
+    color: #00ff99;
+    font-size: 1.4rem;
+    margin: 0 0.5rem;
+    transition: color 0.3s ease;
+  }
+  
+  .social-icons a:hover {
+    color: #00cc88;
+  }
+  
+  /* Ensure desktop view is unaffected */
+  @media (min-width: 769px) {
+    .bm-menu-wrap {
+      display: none; /* Hide the entire menu on desktop */
+    }
+    
+    .navbar-list {
+      display: flex;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .navbar-logo-img {
+      height: 30px; 
+    }
+  
+    .navbar {
+      padding: 0.3rem 0.8rem; 
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  
+    
+    .wallet-button {
+      padding: 0.1rem 0.5rem; 
+      font-size: 9px;
+      margin-right: 27px; 
+    }
+  
+    .wallet-icon {
+      font-size: 14px; 
+    }
+    .navbar-list {
+      display: none; 
+    }
+  
+    .bm-burger-button {
+      right: 8px;
+      top: 10px; 
+      width: 30px;
+      height: 25px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .bm-burger-bars {
+      padding: 2px; 
+    }
+  }
+  
+  .wallet-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 0.8rem;
+    background: linear-gradient(90deg, #733bea, #3d1497); 
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 15px;
+    cursor: pointer;
+    margin-left: auto;
+    transition: background 0.4s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); 
+  }
+  
+  .wallet-button:hover {
+    background: linear-gradient(90deg, #3d1497, #733bea);
+    transform: translateY(-3px) scale(1.02); 
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  }
+  
+  
+  .wallet-icon {
+    margin-right: 10px;
+    font-size: 20px;
+    transition: transform 0.3s ease, color 0.3s ease;
+    color: #f0e68c; 
+  }
+  
+  .wallet-button:hover .wallet-icon {
+    transform: scale(1.2); 
+    color: #ffffff; 
+  }
+  
+  /* .connection-status {
+    display: flex;
+    align-items: center;
+    margin-left: 1rem;
+  }
+  
+  .connected-icon {
+    color: #00ff99;
+    font-size: 18px;
+  }
+  
+  .blank-circle {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #ccc;
+    border-radius: 50%;
+    background-color: transparent;
+  } */
+   
+  .connection-status {
+    display: flex;
+    align-items: center; 
+    position: relative; 
+  }
+  
+  .connected-icon {
+    color: #00ff99;
+    font-size: 14px;
+    background: radial-gradient(circle, #00ffcc, #00ccff); 
+    border-radius: 50%;
+    padding: 2px;
+    box-shadow: 0 0 8px #00ff99, 0 0 12px #00ccff; 
+    animation: pulse 1.5s infinite alternate;
+    margin-left: 10px; 
+    width: 14px; 
+    height: 14px;
+  }
+  
+  @keyframes pulse {
+    from {
+      transform: scale(0.9);
+      box-shadow: 0 0 6px #00ff99, 0 0 10px #00ccff;
+    }
+    to {
+      transform: scale(1.1);
+      box-shadow: 0 0 12px #00ff99, 0 0 16px #00ccff;
+    }
+  }
+  
+  .blank-circle {
+    width: 14px;
+    height: 14px;
+    border: 2px solid #ff66ff; 
+    border-radius: 50%;
+    background-color: transparent;
+    box-shadow: 0 0 6px #ff66ff; 
+    margin-left: 10px;
+  }
+  
