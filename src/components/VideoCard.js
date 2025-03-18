@@ -1,32 +1,27 @@
 import React, { useState, useRef } from 'react';
-import { Card, CardContent, Typography, Box, Avatar, IconButton, CardMedia } from '@mui/material';
-import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
-import GetAppIcon from '@mui/icons-material/GetApp';
+import { Card, CardMedia, Typography, Box, Avatar, IconButton } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import PauseIcon from '@mui/icons-material/Pause';
+import GetAppIcon from '@mui/icons-material/GetApp';
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import { getVideoUrl } from '../firebase';
 
+// Helper function to format dates
 const formatDate = (timestamp) => {
   if (!timestamp) return '';
   
   try {
-    // Handle Firestore timestamp
-    if (timestamp.toDate) {
-      return new Date(timestamp.toDate()).toLocaleDateString('en-US', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric'
-      });
-    }
+    const date = timestamp instanceof Date 
+      ? timestamp 
+      : timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
     
-    // Handle string timestamp
-    return new Date(timestamp).toLocaleDateString('en-US', {
-      day: 'numeric',
+    // Format: "March 7, 2025"
+    return new Intl.DateTimeFormat('en-US', { 
       month: 'long',
+      day: 'numeric',
       year: 'numeric'
-    });
-  } catch (error) {
-    console.error('Error formatting date:', error);
+    }).format(date);
+  } catch (err) {
+    console.error('Error formatting date:', err);
     return '';
   }
 };
@@ -67,24 +62,55 @@ const VideoCard = ({ id, caption, overview, tag, timestamp, uploader, videoHash 
       flexDirection: 'column',
       position: 'relative',
       boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
-      backgroundColor: '#222222',
-      background: 'linear-gradient(145deg, rgba(40,40,40,1) 0%, rgba(25,25,25,1) 100%)',
+      backgroundColor: '#1A1A1A',
+      borderRadius: '12px',
+      transition: 'transform 0.3s ease',
       '&:hover': {
         transform: 'translateY(-4px)',
         boxShadow: '0 6px 20px rgba(0,0,0,0.4)',
       }
     }}>
       <Box sx={{ position: 'relative' }}>
+        {/* FNA.ai logo in top left */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 12,
+            left: 12,
+            zIndex: 10,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            borderRadius: '4px',
+            padding: '3px 6px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Typography
+            sx={{
+              fontSize: '0.65rem',
+              fontWeight: 'bold',
+              color: 'white',
+              background: 'linear-gradient(90deg, #7C4DFF 0%, #00E5FF 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              letterSpacing: '0.5px',
+            }}
+          >
+            FNA.ai
+          </Typography>
+        </Box>
+        
         <CardMedia
           component="video"
           ref={videoRef}
           onEnded={() => setIsPlaying(false)}
-          height="200"
+          height="240"
           src={videoUrl}
           sx={{ 
             objectFit: 'cover',
             cursor: 'pointer',
-            borderBottom: '1px solid rgba(255,255,255,0.05)'
+            borderRadius: '12px 12px 0 0'
           }}
           onClick={handlePlayPause}
         />
@@ -107,9 +133,9 @@ const VideoCard = ({ id, caption, overview, tag, timestamp, uploader, videoHash 
           {!isPlaying && (
             <PlayArrowIcon 
               sx={{ 
-                fontSize: 60, 
+                fontSize: 70, 
                 color: 'white',
-                opacity: 0.8,
+                opacity: 0.9,
                 transition: 'all 0.3s ease',
                 '&:hover': {
                   opacity: 1,
@@ -119,14 +145,15 @@ const VideoCard = ({ id, caption, overview, tag, timestamp, uploader, videoHash 
             />
           )}
         </Box>
+        
+        {/* Hashtag in top right */}
         {tag && (
           <Box
             sx={{
               position: 'absolute',
-              top: 10,
-              right: 10,
-              backgroundColor: 'rgba(0,0,0,0.6)',
-              backdropFilter: 'blur(5px)',
+              top: 12,
+              right: 12,
+              backgroundColor: 'rgba(0,0,0,0.5)',
               borderRadius: '4px',
               padding: '4px 8px',
               display: 'flex',
@@ -139,50 +166,36 @@ const VideoCard = ({ id, caption, overview, tag, timestamp, uploader, videoHash 
               sx={{
                 color: '#00E5FF',
                 fontWeight: 500,
-                fontSize: '0.7rem',
+                fontSize: '0.8rem',
               }}
             >
-              {tag.split(' ')[0]}
+              {tag.startsWith('#') ? tag : `#${tag}`}
             </Typography>
           </Box>
         )}
       </Box>
       
-      <Box sx={{ p: 2, paddingBottom: 0, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ p: 2, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <Typography 
-          gutterBottom 
           variant="h6" 
           component="h2" 
           sx={{ 
             fontWeight: 'bold',
             fontSize: '1.1rem',
-            mb: 1,
             color: 'white',
-            height: '2.4em',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            display: '-webkit-box',
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
-            background: 'linear-gradient(90deg, #ffffff 0%, #e0e0e0 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
+            lineHeight: 1.2,
+            mb: 1
           }}
         >
-          {caption || 'New Report'}
+          {caption || 'News Report'}
         </Typography>
+        
         <Typography 
           variant="body2" 
           sx={{ 
-            mb: 2,
             color: 'rgba(255, 255, 255, 0.7)',
-            height: '4.2em',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            display: '-webkit-box',
-            WebkitLineClamp: 3,
-            WebkitBoxOrient: 'vertical',
-            flexGrow: 1,
+            fontSize: '0.85rem',
+            mb: 2
           }}
         >
           {overview || 'No description available'}
@@ -193,21 +206,23 @@ const VideoCard = ({ id, caption, overview, tag, timestamp, uploader, videoHash 
         display: 'flex', 
         alignItems: 'center', 
         justifyContent: 'space-between',
-        mt: 'auto',
-        p: 2,
-        pt: 1,
-        borderTop: '1px solid rgba(255,255,255,0.05)'
+        px: 2,
+        pb: 2
       }}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Avatar
-            src={`https://ui-avatars.com/api/?name=${uploader || 'User'}&background=random`}
             sx={{ 
-              width: 32, 
-              height: 32, 
+              width: 30, 
+              height: 30, 
               mr: 1,
-              border: '2px solid #7C4DFF',
+              bgcolor: tag === '#generalnews' ? '#00E5FF' : 'primary.main',
+              color: 'white',
+              fontWeight: 'bold',
+              fontSize: '0.7rem'
             }}
-          />
+          >
+            {tag === '#generalnews' ? 'SH' : 'HA'}
+          </Avatar>
           <Box>
             <Typography 
               variant="subtitle2" 
@@ -215,9 +230,10 @@ const VideoCard = ({ id, caption, overview, tag, timestamp, uploader, videoHash 
                 fontWeight: 'bold',
                 color: 'white',
                 lineHeight: 1.2,
+                fontSize: '0.85rem'
               }}
             >
-              {uploader || 'Anonymous'}
+              {uploader || tag === '#generalnews' ? 'Shrey' : 'Harshil'}
             </Typography>
             <Typography 
               variant="caption" 
@@ -226,17 +242,20 @@ const VideoCard = ({ id, caption, overview, tag, timestamp, uploader, videoHash 
                 fontSize: '0.7rem',
               }}
             >
-              {formatDate(timestamp) || 'Unknown date'}
+              {tag === '#generalnews' ? 'March 7, 2025' : 'March 18, 2025'}
             </Typography>
           </Box>
         </Box>
+        
         <Box>
           <IconButton 
             size="small" 
             sx={{ 
               color: 'rgba(255, 255, 255, 0.6)',
               p: 0.5,
-              mr: 1,
+              '&:hover': {
+                color: 'white'
+              }
             }}
             onClick={handleDownload}
           >
@@ -247,6 +266,10 @@ const VideoCard = ({ id, caption, overview, tag, timestamp, uploader, videoHash 
             sx={{ 
               color: 'rgba(255, 255, 255, 0.6)',
               p: 0.5,
+              ml: 1,
+              '&:hover': {
+                color: 'white'
+              }
             }}
           >
             <BookmarkBorderIcon fontSize="small" />

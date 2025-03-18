@@ -1,197 +1,376 @@
-import React from 'react';
-import { Link as RouterLink, useLocation } from 'react-router-dom';
-import {
-  Box,
-  Drawer,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Typography,
-  Divider,
-  useMediaQuery,
-  Paper,
-  Chip,
-} from '@mui/material';
-import { useTheme } from '@mui/material/styles';
-import {
-  Dashboard as DashboardIcon,
-  Newspaper as NewspaperIcon,
-  Bookmark as BookmarkIcon,
-  TrendingUp as TrendingUpIcon,
-  Notifications as NotificationsIcon,
-  Settings as SettingsIcon,
-  AccountCircle as AccountCircleIcon,
-} from '@mui/icons-material';
-
-// Mock data for popular categories
-const categories = [
-  { id: 1, name: 'Politics', count: 24 },
-  { id: 2, name: 'Technology', count: 18 },
-  { id: 3, name: 'Business', count: 15 },
-  { id: 4, name: 'Sports', count: 12 },
-  { id: 5, name: 'Entertainment', count: 10 },
-];
-
-// Navigation links
-const mainNavItems = [
-  { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
-  { text: 'News Feed', icon: <NewspaperIcon />, path: '/news' },
-  { text: 'Trending', icon: <TrendingUpIcon />, path: '/trending' },
-  { text: 'Bookmarks', icon: <BookmarkIcon />, path: '/bookmarks' },
-  { text: 'Notifications', icon: <NotificationsIcon />, path: '/notifications' },
-];
-
-const userNavItems = [
-  { text: 'Profile', icon: <AccountCircleIcon />, path: '/profile' },
-  { text: 'Settings', icon: <SettingsIcon />, path: '/settings' },
-];
+import React, { useState, useEffect } from 'react';
+// eslint-disable-next-line no-unused-vars
+import { Box, Typography, List, ListItem, ListItemText, ListItemIcon, Divider, Collapse, useMediaQuery, useTheme, Tooltip } from '@mui/material';
+// eslint-disable-next-line no-unused-vars
+import { FaHome, FaNewspaper, FaFireAlt, FaFootballBall, FaTv, FaGraduationCap, 
+  FaInfoCircle, FaEnvelope, FaAngleDown, FaAngleUp, FaEllipsisH, FaUtensils, 
+  FaFlask, FaMusic, FaTree, FaPlane, FaStar, FaBars, FaTimesCircle, FaBookmark, FaCog
+} from 'react-icons/fa';
+import { Link, useLocation } from 'react-router-dom';
+import './Sidebar.css';
 
 const Sidebar = () => {
-  const theme = useTheme();
   const location = useLocation();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const [collapsed, setCollapsed] = useState(false);
+  const [hoveredItem, setHoveredItem] = useState(null);
+  const [hovering, setHovering] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(!isMobile);
   
-  // Don't show sidebar on mobile as we handle it via the Header's drawer
-  if (isMobile) {
-    return null;
-  }
+  // Check for mobile view and set collapsed state
+  useEffect(() => {
+    setCollapsed(isMobile);
+    setShowSidebar(!isMobile);
+  }, [isMobile]);
   
-  const drawerWidth = 240;
+  // Initialize sidebar state in App.js
+  useEffect(() => {
+    // Dispatch event to set initial sidebar state
+    window.dispatchEvent(new CustomEvent('sidebarToggle', { 
+      detail: { isOpen: showSidebar }
+    }));
+  }, [showSidebar]);
+  
+  const isActive = (path) => {
+    return location.pathname === path;
+  };
+  
+  const handleToggleSidebar = () => {
+    setShowSidebar(!showSidebar);
+    // Dispatch custom event to notify App.js about sidebar toggle
+    window.dispatchEvent(new CustomEvent('sidebarToggle', { 
+      detail: { isOpen: !showSidebar }
+    }));
+  };
+  
+  const mainItems = [
+    { name: 'Home', icon: <FaHome size={20} />, path: '/' },
+    { name: 'Popular', icon: <FaFireAlt size={20} />, path: '/trending' },
+  ];
+
+  const categories = [
+    { name: 'News', icon: <FaNewspaper size={20} />, path: '/news' },
+    { name: 'Sports', icon: <FaFootballBall size={20} />, path: '/sports', badge: 'new' },
+    { name: 'Entertainment', icon: <FaTv size={20} />, path: '/entertainment' },
+    { name: 'Education', icon: <FaGraduationCap size={20} />, path: '/education' },
+    { name: 'Foods & Drinks', icon: <FaUtensils size={20} />, path: '/foods-drinks' },
+    { name: 'Science', icon: <FaFlask size={20} />, path: '/science' },
+    { name: 'Music', icon: <FaMusic size={20} />, path: '/music' },
+    { name: 'Nature', icon: <FaTree size={20} />, path: '/nature' },
+    { name: 'Places & Travels', icon: <FaPlane size={20} />, path: '/travel' },
+  ];
+
+  const resources = [
+    { name: 'About', icon: <FaInfoCircle size={20} />, path: 'https://fnaai-l.vercel.app/' },
+    { name: 'Contact', icon: <FaEnvelope size={20} />, path: 'https://fnaai.vercel.app/contactsupport' },
+    { name: 'Settings', icon: <FaCog size={20} />, path: '/settings' },
+    { name: 'Saved', icon: <FaBookmark size={20} />, path: '/saved', badge: 5 },
+  ];
   
   return (
-    <Drawer
-      sx={{
-        width: drawerWidth,
-        flexShrink: 0,
-        '& .MuiDrawer-paper': {
-          width: drawerWidth,
-          boxSizing: 'border-box',
-          border: 'none',
-          background: theme.palette.background.default,
-        },
-      }}
-      variant="permanent"
-      anchor="left"
-    >
-      <Box sx={{ p: 2, pt: 3 }}>
-        <Typography variant="h6" color="primary" sx={{ fontWeight: 'bold', mb: 1 }}>
-          Main Menu
-        </Typography>
-      </Box>
-      
-      <List component="nav">
-        {mainNavItems.map((item) => (
-          <ListItem 
-            button 
-            key={item.text}
-            component={RouterLink}
-            to={item.path}
-            selected={location.pathname === item.path}
-            sx={{
-              my: 0.5,
-              px: 2,
-              py: 1,
-              borderRadius: '8px',
-              mx: 1,
-              '&.Mui-selected': {
-                backgroundColor: `${theme.palette.primary.light}20`,
-                color: theme.palette.primary.main,
-                '& .MuiListItemIcon-root': {
-                  color: theme.palette.primary.main,
-                }
-              },
-            }}
-          >
-            <ListItemIcon sx={{ minWidth: 40 }}>
-              {item.icon}
-            </ListItemIcon>
-            <ListItemText primary={item.text} />
-          </ListItem>
-        ))}
-      </List>
-      
-      <Divider sx={{ my: 2 }} />
-      
-      <Box sx={{ p: 2 }}>
-        <Typography variant="h6" color="primary" sx={{ fontWeight: 'bold', mb: 1 }}>
-          Popular Categories
-        </Typography>
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-          {categories.map((category) => (
-            <Chip
-              key={category.id}
-              label={`${category.name} (${category.count})`}
-              component={RouterLink}
-              to={`/category/${category.name.toLowerCase()}`}
-              clickable
-              size="small"
-              color="primary"
-              variant="outlined"
-              sx={{ margin: '4px' }}
-            />
-          ))}
-        </Box>
-      </Box>
-      
-      <Divider sx={{ my: 2 }} />
-      
-      <List component="nav">
-        {userNavItems.map((item) => (
-          <ListItem 
-            button 
-            key={item.text}
-            component={RouterLink}
-            to={item.path}
-            selected={location.pathname === item.path}
-            sx={{
-              my: 0.5,
-              px: 2,
-              py: 1,
-              borderRadius: '8px',
-              mx: 1,
-              '&.Mui-selected': {
-                backgroundColor: `${theme.palette.primary.light}20`,
-                color: theme.palette.primary.main,
-                '& .MuiListItemIcon-root': {
-                  color: theme.palette.primary.main,
-                }
-              },
-            }}
-          >
-            <ListItemIcon sx={{ minWidth: 40 }}>
-              {item.icon}
-            </ListItemIcon>
-            <ListItemText primary={item.text} />
-          </ListItem>
-        ))}
-      </List>
-      
-      <Box sx={{ flexGrow: 1 }} />
-      
-      <Paper 
-        elevation={0} 
-        sx={{ 
-          m: 2, 
-          p: 2, 
-          borderRadius: 2,
-          bgcolor: 'rgba(25, 118, 210, 0.05)',
-          border: '1px solid rgba(25, 118, 210, 0.1)'
+    <>
+      {/* Hamburger menu toggle (visible in mobile and when sidebar is hidden) */}
+      <Box
+        sx={{
+          position: 'fixed',
+          top: '35px',
+          left: '20px',
+          zIndex: 1301,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          cursor: 'pointer',
+          width: 40,
+          height: 40,
+          borderRadius: '8px',
+          backgroundColor: 'rgba(40, 40, 40, 0.4)',
+          transition: 'background-color 0.2s ease',
+          '&:hover': {
+            backgroundColor: 'rgba(60, 60, 60, 0.7)',
+          }
         }}
+        onClick={handleToggleSidebar}
       >
-        <Typography variant="subtitle2" gutterBottom>
-          Need help?
+        {showSidebar ? <FaTimesCircle size={22} color="rgba(255,255,255,0.9)" /> : <FaBars size={22} color="rgba(255,255,255,0.9)" />}
+      </Box>
+
+      {/* Sidebar */}
+      <Box 
+        className="sidebar" 
+        sx={{ 
+          bgcolor: '#1A1A1A', 
+          height: '100vh',
+          position: 'fixed',
+          top: '64px',
+          left: showSidebar ? 0 : '-240px',
+          zIndex: 1200,
+          borderRadius: 0,
+          width: '240px',
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          boxShadow: hovering ? '0 5px 20px rgba(0,0,0,0.4)' : '0 2px 8px rgba(0,0,0,0.3)',
+          overflowY: 'auto',
+          '@media (max-width: 600px)': {
+            width: '100%',
+            left: showSidebar ? 0 : '-100%',
+          }
+        }}
+        onMouseEnter={() => setHovering(true)}
+        onMouseLeave={() => setHovering(false)}
+      >
+        {/* Main Navigation */}
+        <List component="nav" sx={{ p: 1, mt: 2 }}>
+          {mainItems.map((item) => (
+            <Tooltip 
+              key={item.name}
+              title={collapsed ? item.name : ""}
+              placement="right"
+              arrow
+              disableHoverListener={!collapsed}
+            >
+              <ListItem
+                button
+                component={Link}
+                to={item.path}
+                className={isActive(item.path) ? 'active-item' : ''}
+                onMouseEnter={() => setHoveredItem(item.name)}
+                onMouseLeave={() => setHoveredItem(null)}
+                sx={{
+                  mb: 0.5,
+                  borderRadius: '8px',
+                  justifyContent: 'flex-start',
+                  height: '48px',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  backgroundColor: isActive(item.path) ? 'rgba(124, 77, 255, 0.15)' : 'transparent',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  '&:hover': {
+                    backgroundColor: isActive(item.path) ? 'rgba(124, 77, 255, 0.2)' : 'rgba(255,255,255,0.1)',
+                    transform: 'translateY(-2px)',
+                  },
+                  '&::before': hoveredItem === item.name && !isActive(item.path) ? {
+                    content: '""',
+                    position: 'absolute',
+                    left: 0,
+                    top: 0,
+                    bottom: 0,
+                    width: '4px',
+                    backgroundColor: 'var(--primary-color)',
+                    borderRadius: '0 4px 4px 0',
+                    opacity: 0.7,
+                  } : {}
+                }}
+              >
+                <ListItemIcon 
+                  sx={{ 
+                    minWidth: 40, 
+                    color: isActive(item.path) ? '#7C4DFF' : 'rgba(255,255,255,0.7)',
+                    mr: 1,
+                    transition: 'color 0.3s ease',
+                  }}
+                >
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText 
+                  primary={item.name} 
+                  primaryTypographyProps={{ 
+                    fontSize: '0.95rem',
+                    fontWeight: isActive(item.path) ? 'bold' : 'normal',
+                    color: isActive(item.path) ? 'white' : 'rgba(255,255,255,0.7)',
+                    transition: 'color 0.3s ease',
+                  }} 
+                />
+                {isActive(item.path) && (
+                  <Box sx={{ 
+                    position: 'absolute',
+                    right: 10,
+                    color: '#7C4DFF',
+                  }}>
+                    <FaStar size={12} />
+                  </Box>
+                )}
+              </ListItem>
+            </Tooltip>
+          ))}
+        </List>
+        
+        <Divider sx={{ borderColor: 'rgba(255,255,255,0.1)', mt: 1, mb: 1 }} />
+        
+        <Typography 
+          variant="subtitle2" 
+          component="div" 
+          sx={{ 
+            px: 2, 
+            py: 1, 
+            color: 'rgba(255,255,255,0.5)',
+            fontSize: '0.8rem',
+            textTransform: 'uppercase',
+            letterSpacing: 1
+          }}
+        >
+          Categories
         </Typography>
-        <Typography variant="body2" color="text.secondary" paragraph>
-          Visit our help center or contact support.
+        
+        <List component="nav" sx={{ p: 1, flexGrow: 1, overflowY: 'auto' }}>
+          {categories.map((item) => (
+            <Tooltip 
+              key={item.name}
+              title=""
+              placement="right"
+              arrow
+              disableHoverListener={true}
+            >
+              <ListItem
+                button
+                component={Link}
+                to={item.path}
+                className={isActive(item.path) ? 'active-item' : ''}
+                onMouseEnter={() => setHoveredItem(item.name)}
+                onMouseLeave={() => setHoveredItem(null)}
+                sx={{
+                  mb: 0.5,
+                  borderRadius: '8px',
+                  justifyContent: 'flex-start',
+                  height: '48px',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  backgroundColor: isActive(item.path) ? 'rgba(124, 77, 255, 0.15)' : 'transparent',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  '&:hover': {
+                    backgroundColor: isActive(item.path) ? 'rgba(124, 77, 255, 0.2)' : 'rgba(255,255,255,0.1)',
+                    transform: 'translateY(-2px)',
+                  },
+                  '&::before': hoveredItem === item.name && !isActive(item.path) ? {
+                    content: '""',
+                    position: 'absolute',
+                    left: 0,
+                    top: 0,
+                    bottom: 0,
+                    width: '4px',
+                    backgroundColor: 'var(--primary-color)',
+                    borderRadius: '0 4px 4px 0',
+                    opacity: 0.7,
+                  } : {}
+                }}
+              >
+                <ListItemIcon 
+                  sx={{ 
+                    minWidth: 40, 
+                    color: isActive(item.path) ? '#7C4DFF' : 'rgba(255,255,255,0.7)',
+                    mr: 1 
+                  }}
+                >
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText 
+                  primary={item.name} 
+                  primaryTypographyProps={{ 
+                    fontSize: '0.95rem',
+                    fontWeight: isActive(item.path) ? 'bold' : 'normal',
+                    color: isActive(item.path) ? 'white' : 'rgba(255,255,255,0.7)'
+                  }} 
+                />
+                {isActive(item.path) && (
+                  <Box sx={{ 
+                    position: 'absolute',
+                    right: 10,
+                    color: '#7C4DFF',
+                  }}>
+                    <FaStar size={12} />
+                  </Box>
+                )}
+              </ListItem>
+            </Tooltip>
+          ))}
+        </List>
+        
+        <Divider sx={{ borderColor: 'rgba(255,255,255,0.1)', mt: 1, mb: 1 }} />
+        
+        <Typography 
+          variant="subtitle2" 
+          component="div" 
+          sx={{ 
+            px: 2, 
+            py: 1, 
+            color: 'rgba(255,255,255,0.5)',
+            fontSize: '0.8rem',
+            textTransform: 'uppercase',
+            letterSpacing: 1
+          }}
+        >
+          Resources
         </Typography>
-        <RouterLink to="/help" style={{ textDecoration: 'none' }}>
-          <Typography variant="body2" color="primary">
-            Help Center →
-          </Typography>
-        </RouterLink>
-      </Paper>
-    </Drawer>
+        
+        <List component="nav" sx={{ p: 1, mb: 2 }}>
+          {resources.map((item) => (
+            <Tooltip 
+              key={item.name}
+              title=""
+              placement="right"
+              arrow
+              disableHoverListener={true}
+            >
+              <ListItem
+                button
+                component={item.path.startsWith('http') ? 'a' : Link}
+                href={item.path.startsWith('http') ? item.path : undefined}
+                to={!item.path.startsWith('http') ? item.path : undefined}
+                target={item.path.startsWith('http') ? "_blank" : undefined}
+                rel={item.path.startsWith('http') ? "noopener noreferrer" : undefined}
+                className={isActive(item.path) ? 'active-item' : ''}
+                onMouseEnter={() => setHoveredItem(item.name)}
+                onMouseLeave={() => setHoveredItem(null)}
+                sx={{
+                  mb: 0.5,
+                  borderRadius: '8px',
+                  justifyContent: 'flex-start',
+                  height: '48px',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  backgroundColor: isActive(item.path) ? 'rgba(124, 77, 255, 0.15)' : 'transparent',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  '&:hover': {
+                    backgroundColor: isActive(item.path) ? 'rgba(124, 77, 255, 0.2)' : 'rgba(255,255,255,0.1)',
+                    transform: 'translateY(-2px)',
+                  },
+                  '&::before': hoveredItem === item.name && !isActive(item.path) ? {
+                    content: '""',
+                    position: 'absolute',
+                    left: 0,
+                    top: 0,
+                    bottom: 0,
+                    width: '4px',
+                    backgroundColor: 'var(--secondary-color)',
+                    borderRadius: '0 4px 4px 0',
+                    opacity: 0.7,
+                  } : {}
+                }}
+              >
+                <ListItemIcon 
+                  sx={{ 
+                    minWidth: 40, 
+                    color: 'rgba(255,255,255,0.7)',
+                    mr: 1
+                  }}
+                >
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText 
+                  primary={item.name} 
+                  primaryTypographyProps={{ 
+                    fontSize: '0.95rem',
+                    color: 'rgba(255,255,255,0.7)'
+                  }} 
+                />
+              </ListItem>
+            </Tooltip>
+          ))}
+        </List>
+      </Box>
+    </>
   );
 };
 

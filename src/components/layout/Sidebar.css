@@ -1,0 +1,108 @@
+.sidebar {
+  padding: 10px;
+  height: calc(100vh - 64px); /* Account for navbar height */
+  overflow-y: auto;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  position: sticky;
+  top: 1rem;
+  max-height: calc(100vh - 2rem);
+}
+
+.active-item {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  position: relative;
+}
+
+.active-item::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  background-color: var(--primary-color);
+  border-radius: 4px 0 0 4px;
+}
+
+/* Custom scrollbar for sidebar */
+.sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+@media (max-width: 600px) {
+  .sidebar {
+    width: 240px !important; /* Make sidebar full width in mobile */
+    z-index: 1300; /* Ensure it's above other content */
+  }
+  
+  .sidebar > div:not(:first-child) {
+    display: none;
+  }
+  
+  .sidebar > div:first-child {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    width: 100%;
+    padding: 0 !important;
+  }
+  
+  .sidebar .MuiList-root.MuiList-nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    width: 100%;
+    padding: 5px !important;
+  }
+  
+  .sidebar .MuiListItem-root {
+    width: auto;
+    flex: 1;
+    justify-content: center;
+    margin-bottom: 0 !important;
+    padding: 4px 0;
+  }
+  
+  .sidebar .MuiListItemIcon-root {
+    min-width: auto;
+    margin-right: 0 !important;
+    justify-content: center;
+  }
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Content spacing */
+body {
+  overflow-x: hidden;
+}
+
+/* Main content area adjustment */
+.App main {
+  min-height: calc(100vh - 64px);
+  padding-top: 20px;
+} 

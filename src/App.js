@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { Container, Typography, Box } from '@mui/material';
-import NewsList from './components/NewsList';
+import { Box } from '@mui/material';
+import HomePage from './pages/HomePage';
+import TrendingPage from './pages/TrendingPage';
+import './App.css';
 import Navbar from './components/layout/Navbar';
+import Sidebar from './components/layout/Sidebar';
 
 const theme = createTheme({
   palette: {
@@ -87,66 +90,61 @@ const theme = createTheme({
 });
 
 function App() {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  // Custom event listener for sidebar toggle
+  useEffect(() => {
+    const handleSidebarToggle = (e) => {
+      setSidebarOpen(e.detail.isOpen);
+    };
+
+    window.addEventListener('sidebarToggle', handleSidebarToggle);
+    return () => {
+      window.removeEventListener('sidebarToggle', handleSidebarToggle);
+    };
+  }, []);
+
   return (
     <Router>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Navbar />
-        <Box sx={{ 
-          minHeight: '100vh', 
-          bgcolor: '#1a1a1a', 
-          py: 4,
-          backgroundImage: 'url(/images/background.jpeg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundAttachment: 'fixed',
-          '&::before': {
-            content: '""',
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-            backgroundColor: 'rgba(23, 23, 23, 0.85)',
-            zIndex: -1,
-          },
-          position: 'relative',
-          zIndex: 0,
-        }}>
-          <Container maxWidth="lg">
-            <Routes>
-              <Route path="/" element={
-                <>
-                 
-                  <NewsList />
-                </>
-              } />
-              <Route path="/news" element={
-                <>
-                  <Typography variant="h1" component="h1">
-                    News History
-                  </Typography>
-                  <NewsList />
-                </>
-              } />
-              <Route path="/analyze" element={
-                <Typography variant="h1" component="h1">
-                  Analyze Media
-                </Typography>
-              } />
-              <Route path="/about" element={
-                <Typography variant="h1" component="h1">
-                  About FNA.ai
-                </Typography>
-              } />
-              <Route path="/contact" element={
-                <Typography variant="h1" component="h1">
-                  Contact Us
-                </Typography>
-              } />
-            </Routes>
-          </Container>
-        </Box>
+        <div className="App">
+          <Navbar />
+          <Box sx={{ display: 'flex', backgroundColor: '#121212', minHeight: '100vh', color: 'white', paddingTop: '64px' }}>
+            <Sidebar />
+            <Box 
+              component="main" 
+              sx={{ 
+                flexGrow: 1, 
+                width: '100%',
+                p: { xs: 1.5, sm: 2, md: 3 },
+                transition: 'margin-left 0.3s ease',
+                marginLeft: sidebarOpen ? { xs: 0, md: '240px' } : 0,
+                '@media (max-width: 600px)': {
+                  marginLeft: 0,
+                  width: '100%',
+                }
+              }}
+            >
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/trending" element={<TrendingPage />} />
+                <Route path="/news" element={<HomePage />} />
+                <Route path="/sports" element={<HomePage category="sports" />} />
+                <Route path="/entertainment" element={<HomePage category="entertainment" />} />
+                <Route path="/education" element={<HomePage category="education" />} />
+                <Route path="/foods-drinks" element={<HomePage category="food" />} />
+                <Route path="/science" element={<HomePage category="science" />} />
+                <Route path="/music" element={<HomePage category="music" />} />
+                <Route path="/nature" element={<HomePage category="nature" />} />
+                <Route path="/travel" element={<HomePage category="travel" />} />
+                <Route path="/settings" element={<HomePage />} />
+                <Route path="/saved" element={<HomePage />} />
+                <Route path="*" element={<HomePage />} />
+              </Routes>
+            </Box>
+          </Box>
+        </div>
       </ThemeProvider>
     </Router>
   );

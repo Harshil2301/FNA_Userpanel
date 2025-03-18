@@ -3,7 +3,7 @@ import { Grid, Card, Typography, Box, CircularProgress } from '@mui/material';
 import VideoCard from './VideoCard';
 import { fetchVideos } from '../firebase';
 
-const NewsList = () => {
+const NewsList = ({ category }) => {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -12,7 +12,29 @@ const NewsList = () => {
     const loadVideos = async () => {
       try {
         setLoading(true);
-        const videoData = await fetchVideos(6);
+        const videoData = await fetchVideos(6, category);
+        
+        // Add example data matching the reference image for the first two videos
+        if (videoData.length >= 2) {
+          videoData[0] = {
+            ...videoData[0],
+            caption: 'News about Climate',
+            overview: 'Weather News',
+            tag: 'news',
+            uploader: 'Harshil',
+            timestamp: new Date('2025-03-18')
+          };
+          
+          videoData[1] = {
+            ...videoData[1],
+            caption: 'New Report',
+            overview: 'Genral Daily News on Climate',
+            tag: 'generalnews',
+            uploader: 'Shrey',
+            timestamp: new Date('2025-03-07')
+          };
+        }
+        
         setVideos(videoData);
         setLoading(false);
       } catch (err) {
@@ -23,7 +45,7 @@ const NewsList = () => {
     };
 
     loadVideos();
-  }, []);
+  }, [category]);
 
   if (loading) {
     return (
@@ -54,110 +76,116 @@ const NewsList = () => {
 
   return (
     <>
+      {/* Video Grid - only 2 cards per row */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         {videos.length > 0 ? (
           videos.map((video) => (
-            <Grid item xs={12} sm={6} md={4} key={video.id}>
+            <Grid item xs={12} sm={6} key={video.id}>
               <VideoCard {...video} />
             </Grid>
           ))
         ) : (
           <Grid item xs={12}>
             <Typography sx={{ textAlign: 'center', my: 4 }}>
-              No videos available at the moment. Please check back later.
+              {category 
+                ? `No videos available for ${category} category at the moment. Please check back later.` 
+                : 'No videos available at the moment. Please check back later.'}
             </Typography>
           </Grid>
         )}
       </Grid>
-      
-      <Card 
-        sx={{ 
-          position: 'relative', 
-          overflow: 'hidden',
-          borderRadius: '12px',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
-          mb: 4,
-          background: 'linear-gradient(135deg, rgba(124,77,255,0.2) 0%, rgba(0,229,255,0.2) 100%)',
-          border: '1px solid rgba(255,255,255,0.1)',
-          height: 300,
-        }}
-      >
-        <Box
-          sx={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundImage: 'url(/images/featured-bg.jpg)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            zIndex: -1,
-            '&::before': {
-              content: '""',
+
+      {/* Technology Spotlight below videos */}
+      {!category && (
+        <Card 
+          sx={{ 
+            position: 'relative', 
+            overflow: 'hidden',
+            borderRadius: '12px',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+            mb: 4,
+            background: 'linear-gradient(135deg, rgba(124,77,255,0.2) 0%, rgba(0,229,255,0.2) 100%)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            height: 300,
+          }}
+        >
+          <Box
+            sx={{
               position: 'absolute',
               top: 0,
               left: 0,
               right: 0,
               bottom: 0,
-              background: 'linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 100%)',
-              zIndex: 0
-            }
-          }}
-        />
+              backgroundImage: 'url(/images/featured-bg.jpg)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              zIndex: -1,
+              '&::before': {
+                content: '""',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: 'linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 100%)',
+                zIndex: 0
+              }
+            }}
+          />
 
-        <Box
-          sx={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            width: '100%',
-            p: 4,
-            color: '#fff',
-            zIndex: 1
-          }}
-        >
-          <Typography 
-            variant="caption" 
-            sx={{ 
-              opacity: 0.8,
-              fontSize: '0.8rem',
-              fontWeight: 500,
-              mb: 1,
-              display: 'block',
-              color: '#00E5FF'
-            }}
-          >
-            Technology Spotlight
-          </Typography>
-          <Typography 
-            variant="h3" 
-            sx={{ 
-              fontWeight: 700, 
-              mb: 1,
-              fontSize: { xs: '1.8rem', sm: '2.2rem', md: '2.5rem' },
-              lineHeight: 1.2,
-              width: { xs: '100%', sm: '80%', md: '60%' },
-              background: 'linear-gradient(90deg, #ffffff 0%, #00E5FF 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}
-          >
-            FNA.ai - Detecting Deepfakes with Advanced AI
-          </Typography>
-          <Typography
-            variant="body1"
+          <Box
             sx={{
-              mt: 2,
-              opacity: 0.8,
-              width: { xs: '100%', sm: '70%', md: '50%' },
-              fontSize: '1rem'
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              width: '100%',
+              p: 4,
+              color: '#fff',
+              zIndex: 1
             }}
           >
-            Our proprietary algorithms identify manipulated media with 99.8% accuracy
-          </Typography>
-        </Box>
-      </Card>
+            <Typography 
+              variant="caption" 
+              sx={{ 
+                opacity: 0.8,
+                fontSize: '0.8rem',
+                fontWeight: 500,
+                mb: 1,
+                display: 'block',
+                color: '#00E5FF'
+              }}
+            >
+              Technology Spotlight
+            </Typography>
+            <Typography 
+              variant="h3" 
+              sx={{ 
+                fontWeight: 700, 
+                mb: 1,
+                fontSize: { xs: '1.8rem', sm: '2.2rem', md: '2.5rem' },
+                lineHeight: 1.2,
+                width: { xs: '100%', sm: '80%', md: '60%' },
+                background: 'linear-gradient(90deg, #ffffff 0%, #00E5FF 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}
+            >
+              AI-Powered News Analysis
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{
+                mt: 2,
+                opacity: 0.8,
+                width: { xs: '100%', sm: '70%', md: '50%' },
+                fontSize: '1rem'
+              }}
+            >
+              Our AI detects fake news with 79.8% accuracy, keeping you informed and protected.
+            </Typography>
+          </Box>
+        </Card>
+      )}
     </>
   );
 };
