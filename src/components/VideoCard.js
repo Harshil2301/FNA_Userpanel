@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Card, CardMedia, Typography, Box, Avatar, IconButton, Modal, Backdrop } from '@mui/material';
+import { Card, CardMedia, Typography, Box, Avatar, IconButton, Dialog, Backdrop } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
@@ -299,16 +299,28 @@ const VideoCard = ({ id, caption, overview, tag, timestamp, uploader, videoHash 
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Avatar
               sx={{ 
-                width: 30, 
-                height: 30, 
-                mr: 1,
-                bgcolor: tag === '#generalnews' ? '#00E5FF' : 'primary.main',
-                color: 'white',
+                width: 40, 
+                height: 40, 
+                mr: 1.5,
+                background: tag === '#generalnews' ? 'linear-gradient(135deg, #00E5FF 0%, #1976d2 100%)' : 
+                         tag && tag.includes('#tech') ? 'linear-gradient(135deg, #4364d9 0%, #5e35b1 100%)' : 
+                         tag && tag.includes('#world') ? 'linear-gradient(135deg, #8c42f4 0%, #673ab7 100%)' :
+                         tag && tag.includes('#israel') ? 'linear-gradient(135deg, #FF5252 0%, #d32f2f 100%)' :
+                         tag && tag.includes('#breaking') ? 'linear-gradient(135deg, #FF9800 0%, #f57c00 100%)' : 
+                         'linear-gradient(135deg, #3396ff 0%, #0288d1 100%)',
                 fontWeight: 'bold',
-                fontSize: '0.7rem'
+                fontSize: '1rem',
+                boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
+                border: '2px solid rgba(255,255,255,0.15)',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  transform: 'scale(1.05)',
+                  boxShadow: '0 6px 12px rgba(0,0,0,0.4)',
+                  border: '2px solid rgba(255,255,255,0.25)',
+                }
               }}
             >
-              {tag === '#generalnews' ? 'SH' : 'HA'}
+              {uploader ? (uploader.length > 1 ? uploader.substring(0, 2).toUpperCase() : uploader.charAt(0).toUpperCase()) : 'FN'}
             </Avatar>
             <Box>
               <Typography 
@@ -320,7 +332,7 @@ const VideoCard = ({ id, caption, overview, tag, timestamp, uploader, videoHash 
                   fontSize: '0.85rem'
                 }}
               >
-                {uploader || tag === '#generalnews' ? 'Shrey' : 'Harshil'}
+                {uploader || (tag === '#generalnews' ? 'Shrey' : 'Harshil')}
               </Typography>
               <Typography 
                 variant="caption" 
@@ -329,7 +341,7 @@ const VideoCard = ({ id, caption, overview, tag, timestamp, uploader, videoHash 
                   fontSize: '0.7rem',
                 }}
               >
-                {tag === '#generalnews' ? 'March 7, 2025' : 'March 18, 2025'}
+                {formatDate(timestamp) || (tag === '#generalnews' ? 'March 7, 2025' : 'March 18, 2025')}
               </Typography>
             </Box>
           </Box>
@@ -367,32 +379,29 @@ const VideoCard = ({ id, caption, overview, tag, timestamp, uploader, videoHash 
       </Card>
       
       {/* Fullscreen Modal */}
-      <Modal
+      <Dialog
         open={fullscreen}
         onClose={handleCloseFullscreen}
-        closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{
-          timeout: 500,
-        }}
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 9999
+        fullScreen
+        PaperProps={{
+          style: {
+            backgroundColor: 'rgba(0,0,0,0.95)',
+            boxShadow: 'none',
+          }
         }}
       >
-        <Box sx={{ 
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: 'rgba(0,0,0,0.95)',
-          position: 'relative',
-          outline: 'none'
-        }}>
+        <Box 
+          sx={{ 
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            position: 'relative',
+            outline: 'none'
+          }}
+        >
           {/* Video in fullscreen */}
           <Box sx={{ 
             width: { xs: '100%', sm: '90%', md: '80%', lg: '70%' },
@@ -511,17 +520,32 @@ const VideoCard = ({ id, caption, overview, tag, timestamp, uploader, videoHash 
                     width: 40, 
                     height: 40, 
                     mr: 1.5,
-                    bgcolor: tag === '#generalnews' ? '#00E5FF' : 'primary.main'
+                    background: tag === '#generalnews' ? 'linear-gradient(135deg, #00E5FF 0%, #1976d2 100%)' : 
+                             tag && tag.includes('#tech') ? 'linear-gradient(135deg, #4364d9 0%, #5e35b1 100%)' : 
+                             tag && tag.includes('#world') ? 'linear-gradient(135deg, #8c42f4 0%, #673ab7 100%)' :
+                             tag && tag.includes('#israel') ? 'linear-gradient(135deg, #FF5252 0%, #d32f2f 100%)' :
+                             tag && tag.includes('#breaking') ? 'linear-gradient(135deg, #FF9800 0%, #f57c00 100%)' : 
+                             'linear-gradient(135deg, #3396ff 0%, #0288d1 100%)',
+                    fontWeight: 'bold',
+                    fontSize: '1rem',
+                    boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
+                    border: '2px solid rgba(255,255,255,0.15)',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      transform: 'scale(1.05)',
+                      boxShadow: '0 6px 12px rgba(0,0,0,0.4)',
+                      border: '2px solid rgba(255,255,255,0.25)',
+                    }
                   }}
                 >
-                  {tag === '#generalnews' ? 'SH' : 'HA'}
+                  {uploader ? (uploader.length > 1 ? uploader.substring(0, 2).toUpperCase() : uploader.charAt(0).toUpperCase()) : 'FN'}
                 </Avatar>
                 <Box>
                   <Typography sx={{ fontWeight: 'bold' }}>
-                    {uploader || tag === '#generalnews' ? 'Shrey' : 'Harshil'}
+                    {uploader || (tag === '#generalnews' ? 'Shrey' : 'Harshil')}
                   </Typography>
                   <Typography variant="caption" sx={{ opacity: 0.7 }}>
-                    {tag === '#generalnews' ? 'March 7, 2025' : 'March 18, 2025'}
+                    {formatDate(timestamp) || (tag === '#generalnews' ? 'March 7, 2025' : 'March 18, 2025')}
                   </Typography>
                 </Box>
               </Box>
@@ -550,7 +574,7 @@ const VideoCard = ({ id, caption, overview, tag, timestamp, uploader, videoHash 
             </Box>
           </Box>
         </Box>
-      </Modal>
+      </Dialog>
     </>
   );
 };

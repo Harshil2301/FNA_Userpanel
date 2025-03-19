@@ -12,7 +12,8 @@ import {
   Chip,
   IconButton,
   Modal,
-  Backdrop
+  Backdrop,
+  Dialog
 } from '@mui/material';
 import { useLocation } from 'react-router-dom';
 import { FaDownload, FaEye, FaThumbsUp, FaCheck, FaPlay, FaPause, FaVolumeMute, FaVolumeUp, FaBookmark, FaRegBookmark, FaExpand, FaTimes } from 'react-icons/fa';
@@ -531,19 +532,30 @@ const TrendingPage = () => {
                         sx={{ 
                           width: 36, 
                           height: 36, 
-                          bgcolor: index % 3 === 0 ? '#3396ff' : index % 3 === 1 ? '#4364d9' : '#8c42f4',
+                          background: video.tag && video.tag.includes('#tech') ? 'linear-gradient(135deg, #4364d9 0%, #5e35b1 100%)' : 
+                                   video.tag && video.tag.includes('#world') ? 'linear-gradient(135deg, #8c42f4 0%, #673ab7 100%)' :
+                                   video.tag && video.tag.includes('#israel') ? 'linear-gradient(135deg, #FF5252 0%, #d32f2f 100%)' :
+                                   video.tag && video.tag.includes('#breaking') ? 'linear-gradient(135deg, #FF9800 0%, #f57c00 100%)' :
+                                   video.tag && video.tag.includes('#generalnews') ? 'linear-gradient(135deg, #00E5FF 0%, #1976d2 100%)' : 
+                                   'linear-gradient(135deg, #3396ff 0%, #0288d1 100%)',
                           fontSize: '0.9rem',
                           fontWeight: 'bold',
-                          border: '2px solid rgba(255,255,255,0.1)',
-                          transition: 'transform 0.2s ease',
+                          border: '2px solid rgba(255,255,255,0.15)',
+                          transition: 'transform 0.2s ease, box-shadow 0.2s ease, border 0.2s ease',
                           cursor: 'pointer',
+                          boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
                           '&:hover': {
                             transform: 'scale(1.1)',
-                            boxShadow: '0 0 0 2px rgba(255,255,255,0.2)',
+                            boxShadow: '0 6px 12px rgba(0,0,0,0.4)',
+                            border: '2px solid rgba(255,255,255,0.25)',
                           }
                         }}
                       >
-                        {index % 3 === 0 ? 'S' : index % 3 === 1 ? 'P' : 'H'}
+                        {video.uploader ? 
+                          (video.uploader.length > 1 ? 
+                            video.uploader.substring(0, 2).toUpperCase() : 
+                            video.uploader.charAt(0).toUpperCase()) : 
+                          'FN'}
                       </Avatar>
                       <Box>
                         <Typography 
@@ -556,7 +568,7 @@ const TrendingPage = () => {
                             fontSize: '0.9rem'
                           }}
                         >
-                          {index % 3 === 0 ? 'Shrey' : index % 3 === 1 ? 'Priyank' : 'Harshil'}
+                          {video.uploader || (index % 3 === 0 ? 'Shrey' : index % 3 === 1 ? 'Priyank' : 'Harshil')}
                           <Box 
                             component="span" 
                             sx={{ 
@@ -584,52 +596,56 @@ const TrendingPage = () => {
                       </Box>
                     </Box>
                     
-                    {/* Download button */}
-                    <Button 
-                      variant="contained" 
-                      startIcon={<FaDownload />} 
-                      size="small"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDownload(videoUrl, video.id);
-                      }}
-                      sx={{
-                        bgcolor: 'white',
-                        color: '#1A1A1A',
-                        fontWeight: 'bold',
-                        borderRadius: '30px',
-                        textTransform: 'uppercase',
-                        fontSize: '0.75rem',
-                        transition: 'all 0.2s ease',
-                        boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-                        '&:hover': {
-                          bgcolor: '#f0f0f0',
-                          transform: 'translateY(-2px)',
-                          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                        }
-                      }}
-                    >
-                      Download
-                    </Button>
-                    
-                    {/* Save Button */}
-                    <Button 
-                      variant="text" 
-                      size="small"
-                      startIcon={isSaved ? <FaBookmark /> : <FaRegBookmark />}
-                      onClick={(e) => handleSaveToggle(e, video)}
-                      sx={{ 
-                        color: isSaved ? 'var(--primary-color)' : 'rgba(255,255,255,0.7)', 
-                        fontSize: '0.8rem', 
-                        fontWeight: 'bold',
-                        textTransform: 'none',
-                        '&:hover': {
-                          backgroundColor: 'rgba(124, 77, 255, 0.1)'
-                        }
-                      }}
-                    >
-                      {isSaved ? 'Saved' : 'Save'}
-                    </Button>
+                    {/* Action buttons */}
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      {/* Download button */}
+                      <Button 
+                        variant="contained" 
+                        startIcon={<FaDownload />} 
+                        size="small"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDownload(videoUrl, video.id);
+                        }}
+                        sx={{
+                          bgcolor: 'white',
+                          color: '#1A1A1A',
+                          fontWeight: 'bold',
+                          borderRadius: '30px',
+                          textTransform: 'uppercase',
+                          fontSize: '0.75rem',
+                          mr: 1,
+                          transition: 'all 0.2s ease',
+                          boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+                          '&:hover': {
+                            bgcolor: '#f0f0f0',
+                            transform: 'translateY(-2px)',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                          }
+                        }}
+                      >
+                        Download
+                      </Button>
+                      
+                      {/* Save Button */}
+                      <Button 
+                        variant="text" 
+                        size="small"
+                        startIcon={isSaved ? <FaBookmark /> : <FaRegBookmark />}
+                        onClick={(e) => handleSaveToggle(e, video)}
+                        sx={{ 
+                          color: isSaved ? 'var(--primary-color)' : 'rgba(255,255,255,0.7)', 
+                          fontSize: '0.8rem', 
+                          fontWeight: 'bold',
+                          textTransform: 'none',
+                          '&:hover': {
+                            backgroundColor: 'rgba(124, 77, 255, 0.1)'
+                          }
+                        }}
+                      >
+                        {isSaved ? 'Saved' : 'Save'}
+                      </Button>
+                    </Box>
                   </Box>
                 </Box>
               </Card>
@@ -650,33 +666,29 @@ const TrendingPage = () => {
       </Box>
       
       {/* Fullscreen Video Modal */}
-      <Modal
+      <Dialog
         open={fullscreenVideo !== null}
         onClose={handleCloseFullscreen}
-        closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{
-          timeout: 500,
-        }}
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 9999
+        fullScreen
+        PaperProps={{
+          style: {
+            backgroundColor: 'rgba(0,0,0,0.95)',
+            boxShadow: 'none',
+          }
         }}
       >
         {fullscreenVideo && (
-          <Box sx={{ 
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'rgba(0,0,0,0.95)',
-            position: 'relative',
-            outline: 'none'
-          }}>
+          <Box 
+            sx={{ 
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              position: 'relative'
+            }}
+          >
             {/* Video in fullscreen */}
             <Box sx={{ 
               width: { xs: '100%', sm: '90%', md: '80%', lg: '70%' },
@@ -812,14 +824,33 @@ const TrendingPage = () => {
                       width: 40, 
                       height: 40, 
                       mr: 1.5,
-                      bgcolor: fullscreenVideo.tag && fullscreenVideo.tag.includes('#generalnews') ? '#00E5FF' : 'primary.main'
+                      background: fullscreenVideo.tag && fullscreenVideo.tag.includes('#tech') ? 'linear-gradient(135deg, #4364d9 0%, #5e35b1 100%)' : 
+                               fullscreenVideo.tag && fullscreenVideo.tag.includes('#world') ? 'linear-gradient(135deg, #8c42f4 0%, #673ab7 100%)' :
+                               fullscreenVideo.tag && fullscreenVideo.tag.includes('#israel') ? 'linear-gradient(135deg, #FF5252 0%, #d32f2f 100%)' :
+                               fullscreenVideo.tag && fullscreenVideo.tag.includes('#breaking') ? 'linear-gradient(135deg, #FF9800 0%, #f57c00 100%)' :
+                               fullscreenVideo.tag && fullscreenVideo.tag.includes('#generalnews') ? 'linear-gradient(135deg, #00E5FF 0%, #1976d2 100%)' : 
+                               'linear-gradient(135deg, #3396ff 0%, #0288d1 100%)',
+                      fontWeight: 'bold',
+                      fontSize: '1rem',
+                      border: '2px solid rgba(255,255,255,0.15)',
+                      boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
+                      transition: 'all 0.3s ease',
+                      '&:hover': {
+                        transform: 'scale(1.05)',
+                        boxShadow: '0 6px 12px rgba(0,0,0,0.4)',
+                        border: '2px solid rgba(255,255,255,0.25)',
+                      }
                     }}
                   >
-                    {fullscreenVideo.uploader ? fullscreenVideo.uploader.charAt(0) : 'U'}
+                    {fullscreenVideo.uploader ? 
+                      (fullscreenVideo.uploader.length > 1 ? 
+                        fullscreenVideo.uploader.substring(0, 2).toUpperCase() : 
+                        fullscreenVideo.uploader.charAt(0).toUpperCase()) : 
+                      'FN'}
                   </Avatar>
                   <Box>
                     <Typography sx={{ fontWeight: 'bold', display: 'flex', alignItems: 'center' }}>
-                      {fullscreenVideo.uploader || 'User'}
+                      {fullscreenVideo.uploader || 'Unknown'}
                       <Box component="span" sx={{ ml: 0.5, display: 'inline-flex' }}>
                         <FaCheck size={12} color="#4caf50" />
                       </Box>
@@ -830,7 +861,7 @@ const TrendingPage = () => {
                   </Box>
                 </Box>
                 
-                <Box>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <Button 
                     variant="contained" 
                     startIcon={<FaDownload />} 
@@ -876,7 +907,7 @@ const TrendingPage = () => {
             </Box>
           </Box>
         )}
-      </Modal>
+      </Dialog>
     </Box>
   );
 };
