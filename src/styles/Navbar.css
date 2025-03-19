@@ -11,7 +11,7 @@
 }
 
 .navbar {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transition: all 0.3s ease;
 }
 
 .navbar-scrolled {
@@ -72,15 +72,16 @@
 
 /* Logo styling */
 .navbar-logo {
-  height: 40px;
-  width: auto;
+  height: 24px;
+  margin-top: 2px;
   transition: transform 0.3s ease;
 }
 
 .logo-link {
-  position: relative;
-  display: inline-block;
-  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
 }
 
 .logo-link::before {
@@ -133,13 +134,12 @@
 
 /* Search container styling */
 .search-container {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transition: all 0.3s ease;
   box-shadow: 0 1px 8px rgba(0, 0, 0, 0.1);
 }
 
-.search-container.search-focused {
-  box-shadow: 0 0 0 2px rgba(124, 77, 255, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
-  background-color: rgba(255, 255, 255, 0.15) !important;
+.search-focused {
+  transform: translateY(-1px);
 }
 
 .search-container:focus-within {
@@ -212,6 +212,24 @@
   to {
     transform: translateX(0);
     opacity: 1;
+  }
+}
+
+/* Notification pulse animation */
+@keyframes pulse {
+  0% {
+    transform: scale(0.8);
+    box-shadow: 0 0 0 0 rgba(255, 152, 0, 0.4);
+  }
+  
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 5px rgba(255, 152, 0, 0);
+  }
+  
+  100% {
+    transform: scale(0.8);
+    box-shadow: 0 0 0 0 rgba(255, 152, 0, 0);
   }
 }
 

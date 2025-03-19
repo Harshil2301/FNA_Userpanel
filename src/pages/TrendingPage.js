@@ -10,11 +10,13 @@ import {
   Avatar,
   Button,
   Chip,
-  IconButton
+  IconButton,
+  Modal,
+  Backdrop
 } from '@mui/material';
 import { useLocation } from 'react-router-dom';
-import { FaDownload, FaEye, FaThumbsUp, FaCheck, FaPlay, FaPause, FaVolumeMute, FaVolumeUp } from 'react-icons/fa';
-import { fetchVideos, getThumbnailUrl, getVideoUrl } from '../firebase';
+import { FaDownload, FaEye, FaThumbsUp, FaCheck, FaPlay, FaPause, FaVolumeMute, FaVolumeUp, FaBookmark, FaRegBookmark, FaExpand, FaTimes } from 'react-icons/fa';
+import { fetchVideos, getThumbnailUrl, getVideoUrl, saveVideo, unsaveVideo, isVideoSaved } from '../firebase';
 
 // Helper function to parse query parameters
 function useQuery() {
@@ -29,8 +31,13 @@ const TrendingPage = () => {
   const [activeVideo, setActiveVideo] = useState(null);
   const [mutedVideos, setMutedVideos] = useState({});
   const videoRefs = useRef({});
+  const [savedVideos, setSavedVideos] = useState({});
   const query = useQuery();
   const searchParam = query.get('search');
+  const [fullscreenVideo, setFullscreenVideo] = useState(null);
+  const [fullscreenPlaying, setFullscreenPlaying] = useState(true);
+  const [fullscreenMuted, setFullscreenMuted] = useState(false);
+  const fullscreenVideoRef = useRef(null);
 
   useEffect(() => {
     const fetchAndRandomizeVideos = async () => {
@@ -103,6 +110,16 @@ const TrendingPage = () => {
     setFilteredVideos(filtered);
   }, [searchParam, videos]);
 
+  // Add function to check if videos are saved
+  useEffect(() => {
+    // Set initial saved state for each video
+    const initialSavedState = {};
+    videos.forEach(video => {
+      initialSavedState[video.id] = isVideoSaved(video.id);
+    });
+    setSavedVideos(initialSavedState);
+  }, [videos]);
+
   // Function to handle video playback
   const handlePlayPause = (videoId) => {
     const videoElement = videoRefs.current[videoId];
@@ -149,6 +166,74 @@ const TrendingPage = () => {
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
+    }
+  };
+
+  // Function to handle video save/unsave
+  const handleSaveToggle = (e, video) => {
+    e.stopPropagation(); // Prevent triggering video play
+    
+    const videoData = { ...video };
+    const currentSaved = savedVideos[video.id];
+    
+    if (currentSaved) {
+      // Unsave the video
+      unsaveVideo(video.id);
+      setSavedVideos(prev => ({
+        ...prev,
+        [video.id]: false
+      }));
+    } else {
+      // Save the video
+      saveVideo(videoData);
+      setSavedVideos(prev => ({
+        ...prev,
+        [video.id]: true
+      }));
+    }
+  };
+
+  // Handle fullscreen video
+  useEffect(() => {
+    if (fullscreenVideo && fullscreenVideoRef.current) {
+      if (fullscreenPlaying) {
+        fullscreenVideoRef.current.play().catch(err => console.error("Error playing fullscreen video:", err));
+      } else {
+        fullscreenVideoRef.current.pause();
+      }
+    }
+  }, [fullscreenVideo, fullscreenPlaying]);
+
+  // Function to open fullscreen video
+  const handleOpenFullscreen = (e, video) => {
+    e.stopPropagation(); // Prevent triggering video play
+    setFullscreenVideo(video);
+    setFullscreenPlaying(true);
+    setFullscreenMuted(mutedVideos[video.id] || false);
+    
+    // Pause any playing video
+    if (activeVideo && videoRefs.current[activeVideo]) {
+      videoRefs.current[activeVideo].pause();
+      setActiveVideo(null);
+    }
+  };
+
+  // Function to close fullscreen video
+  const handleCloseFullscreen = () => {
+    setFullscreenVideo(null);
+    setFullscreenPlaying(false);
+  };
+
+  // Function to toggle fullscreen play/pause
+  const toggleFullscreenPlayPause = () => {
+    setFullscreenPlaying(!fullscreenPlaying);
+  };
+
+  // Function to toggle fullscreen mute
+  const toggleFullscreenMute = () => {
+    if (fullscreenVideoRef.current) {
+      fullscreenVideoRef.current.muted = !fullscreenMuted;
+      setFullscreenMuted(!fullscreenMuted);
     }
   };
 
@@ -201,6 +286,7 @@ const TrendingPage = () => {
             const videoUrl = getVideoUrl(video.videoHash);
             const isPlaying = activeVideo === video.id;
             const isMuted = mutedVideos[video.id];
+            const isSaved = savedVideos[video.id];
             
             return (
               <Card 
@@ -334,6 +420,26 @@ const TrendingPage = () => {
                       FNA.ai
                     </Typography>
                   </Box>
+                  
+                  {/* Fullscreen button (always visible) */}
+                  <IconButton 
+                    onClick={(e) => handleOpenFullscreen(e, video)}
+                    sx={{ 
+                      position: 'absolute',
+                      bottom: 10,
+                      left: 10,
+                      color: 'white',
+                      backgroundColor: 'rgba(0,0,0,0.5)',
+                      '&:hover': { 
+                        backgroundColor: 'rgba(0,0,0,0.7)' 
+                      },
+                      width: 32,
+                      height: 32,
+                      zIndex: 3
+                    }}
+                  >
+                    <FaExpand size={14} />
+                  </IconButton>
                 </Box>
                 
                 {/* Right side - Content */}
@@ -483,7 +589,10 @@ const TrendingPage = () => {
                       variant="contained" 
                       startIcon={<FaDownload />} 
                       size="small"
-                      onClick={() => handleDownload(videoUrl, video.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDownload(videoUrl, video.id);
+                      }}
                       sx={{
                         bgcolor: 'white',
                         color: '#1A1A1A',
@@ -501,6 +610,25 @@ const TrendingPage = () => {
                       }}
                     >
                       Download
+                    </Button>
+                    
+                    {/* Save Button */}
+                    <Button 
+                      variant="text" 
+                      size="small"
+                      startIcon={isSaved ? <FaBookmark /> : <FaRegBookmark />}
+                      onClick={(e) => handleSaveToggle(e, video)}
+                      sx={{ 
+                        color: isSaved ? 'var(--primary-color)' : 'rgba(255,255,255,0.7)', 
+                        fontSize: '0.8rem', 
+                        fontWeight: 'bold',
+                        textTransform: 'none',
+                        '&:hover': {
+                          backgroundColor: 'rgba(124, 77, 255, 0.1)'
+                        }
+                      }}
+                    >
+                      {isSaved ? 'Saved' : 'Save'}
                     </Button>
                   </Box>
                 </Box>
@@ -520,6 +648,235 @@ const TrendingPage = () => {
           </Typography>
         )}
       </Box>
+      
+      {/* Fullscreen Video Modal */}
+      <Modal
+        open={fullscreenVideo !== null}
+        onClose={handleCloseFullscreen}
+        closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{
+          timeout: 500,
+        }}
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999
+        }}
+      >
+        {fullscreenVideo && (
+          <Box sx={{ 
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(0,0,0,0.95)',
+            position: 'relative',
+            outline: 'none'
+          }}>
+            {/* Video in fullscreen */}
+            <Box sx={{ 
+              width: { xs: '100%', sm: '90%', md: '80%', lg: '70%' },
+              height: { xs: '50%', sm: '60%', md: '70%' },
+              position: 'relative',
+              backgroundColor: '#000',
+              boxShadow: '0 0 50px rgba(0,0,0,0.8)',
+              borderRadius: '8px',
+              overflow: 'hidden'
+            }}>
+              <CardMedia
+                component="video"
+                ref={fullscreenVideoRef}
+                src={getVideoUrl(fullscreenVideo.videoHash)}
+                autoPlay
+                muted={fullscreenMuted}
+                onEnded={() => setFullscreenPlaying(false)}
+                sx={{ 
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'contain',
+                  backgroundColor: '#000'
+                }}
+              />
+              
+              {/* Video controls overlay */}
+              <Box
+                sx={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  p: 2,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%)',
+                  transition: 'opacity 0.3s ease',
+                }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <IconButton
+                    onClick={toggleFullscreenPlayPause}
+                    sx={{ 
+                      color: 'white',
+                      '&:hover': { color: '#7C4DFF' }
+                    }}
+                  >
+                    {fullscreenPlaying ? <FaPause size={18} /> : <FaPlay size={18} />}
+                  </IconButton>
+                  <IconButton
+                    onClick={toggleFullscreenMute}
+                    sx={{ 
+                      color: 'white',
+                      ml: 1,
+                      '&:hover': { color: '#7C4DFF' }
+                    }}
+                  >
+                    {fullscreenMuted ? <FaVolumeMute size={18} /> : <FaVolumeUp size={18} />}
+                  </IconButton>
+                </Box>
+                
+                <Typography 
+                  variant="h6" 
+                  sx={{ 
+                    color: 'white',
+                    fontSize: '1.1rem',
+                    fontWeight: 'bold',
+                    textAlign: 'center',
+                    flexGrow: 1,
+                    textShadow: '0 2px 4px rgba(0,0,0,0.5)'
+                  }}
+                >
+                  {fullscreenVideo.caption || 'News Report'}
+                </Typography>
+                
+                <IconButton
+                  onClick={handleCloseFullscreen}
+                  sx={{ 
+                    color: 'white',
+                    '&:hover': { color: '#FF5252' }
+                  }}
+                >
+                  <FaTimes size={18} />
+                </IconButton>
+              </Box>
+            </Box>
+            
+            {/* Video info */}
+            <Box sx={{ 
+              width: { xs: '100%', sm: '90%', md: '80%', lg: '70%' },
+              p: 2,
+              color: 'white',
+              mt: 2
+            }}>
+              <Typography 
+                variant="body1" 
+                sx={{ 
+                  fontWeight: 500,
+                  mb: 1,
+                  opacity: 0.9
+                }}
+              >
+                {fullscreenVideo.overview || 'No description available'}
+              </Typography>
+              
+              {/* Tags */}
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.8, mb: 1.5, mt: 1.5 }}>
+                {(fullscreenVideo.tag ? fullscreenVideo.tag.split(' ') : ['#news']).map((tag, idx) => (
+                  <Chip
+                    key={idx}
+                    label={tag}
+                    size="small"
+                    sx={{
+                      backgroundColor: 'rgba(37, 37, 37, 0.8)',
+                      color: '#aaa',
+                      fontSize: '0.75rem',
+                      height: 24,
+                    }}
+                  />
+                ))}
+              </Box>
+              
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                mt: 2
+              }}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Avatar 
+                    sx={{ 
+                      width: 40, 
+                      height: 40, 
+                      mr: 1.5,
+                      bgcolor: fullscreenVideo.tag && fullscreenVideo.tag.includes('#generalnews') ? '#00E5FF' : 'primary.main'
+                    }}
+                  >
+                    {fullscreenVideo.uploader ? fullscreenVideo.uploader.charAt(0) : 'U'}
+                  </Avatar>
+                  <Box>
+                    <Typography sx={{ fontWeight: 'bold', display: 'flex', alignItems: 'center' }}>
+                      {fullscreenVideo.uploader || 'User'}
+                      <Box component="span" sx={{ ml: 0.5, display: 'inline-flex' }}>
+                        <FaCheck size={12} color="#4caf50" />
+                      </Box>
+                    </Typography>
+                    <Typography variant="caption" sx={{ opacity: 0.7 }}>
+                      Verified Creator
+                    </Typography>
+                  </Box>
+                </Box>
+                
+                <Box>
+                  <Button 
+                    variant="contained" 
+                    startIcon={<FaDownload />} 
+                    size="small"
+                    onClick={() => handleDownload(getVideoUrl(fullscreenVideo.videoHash), fullscreenVideo.id)}
+                    sx={{
+                      bgcolor: 'white',
+                      color: '#1A1A1A',
+                      fontWeight: 'bold',
+                      borderRadius: '30px',
+                      textTransform: 'uppercase',
+                      fontSize: '0.75rem',
+                      mr: 1,
+                      '&:hover': {
+                        bgcolor: '#f0f0f0',
+                        transform: 'translateY(-2px)',
+                      }
+                    }}
+                  >
+                    Download
+                  </Button>
+                  
+                  <Button 
+                    variant="outlined" 
+                    size="small"
+                    startIcon={savedVideos[fullscreenVideo.id] ? <FaBookmark /> : <FaRegBookmark />}
+                    onClick={() => handleSaveToggle(new Event('click'), fullscreenVideo)}
+                    sx={{ 
+                      color: savedVideos[fullscreenVideo.id] ? 'var(--primary-color)' : 'white',
+                      borderColor: 'rgba(255,255,255,0.3)',
+                      fontSize: '0.8rem', 
+                      fontWeight: 'bold',
+                      borderRadius: '30px',
+                      '&:hover': {
+                        borderColor: 'rgba(255,255,255,0.5)',
+                      }
+                    }}
+                  >
+                    {savedVideos[fullscreenVideo.id] ? 'Saved' : 'Save'}
+                  </Button>
+                </Box>
+              </Box>
+            </Box>
+          </Box>
+        )}
+      </Modal>
     </Box>
   );
 };

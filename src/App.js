@@ -5,6 +5,8 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { Box } from '@mui/material';
 import HomePage from './pages/HomePage';
 import TrendingPage from './pages/TrendingPage';
+import SavedPage from './pages/SavedPage';
+import SettingsPage from './pages/SettingsPage';
 import './App.css';
 import Navbar from './components/layout/Navbar';
 import Sidebar from './components/layout/Sidebar';
@@ -138,8 +140,8 @@ function App() {
                 <Route path="/music" element={<HomePage category="music" />} />
                 <Route path="/nature" element={<HomePage category="nature" />} />
                 <Route path="/travel" element={<HomePage category="travel" />} />
-                <Route path="/settings" element={<HomePage />} />
-                <Route path="/saved" element={<HomePage />} />
+                <Route path="/saved" element={<SavedPage />} />
+                <Route path="/settings" element={<SettingsPage />} />
                 <Route path="*" element={<HomePage />} />
               </Routes>
             </Box>

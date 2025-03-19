@@ -88,5 +88,67 @@ export const getThumbnailUrl = (videoHash, item) => {
   return getVideoUrl(videoHash);
 };
 
+// Function to save video to local storage
+export const saveVideo = (video) => {
+  try {
+    // Get current saved videos
+    const savedVideos = getSavedVideos();
+    
+    // Check if video is already saved
+    if (!savedVideos.some(v => v.id === video.id)) {
+      // Add video to saved videos
+      savedVideos.push(video);
+      
+      // Save back to local storage
+      localStorage.setItem('savedVideos', JSON.stringify(savedVideos));
+      return true;
+    }
+    return false; // Video was already saved
+  } catch (error) {
+    console.error('Error saving video:', error);
+    return false;
+  }
+};
+
+// Function to remove video from saved videos
+export const unsaveVideo = (videoId) => {
+  try {
+    // Get current saved videos
+    const savedVideos = getSavedVideos();
+    
+    // Filter out the video to remove
+    const updatedSavedVideos = savedVideos.filter(v => v.id !== videoId);
+    
+    // Save back to local storage
+    localStorage.setItem('savedVideos', JSON.stringify(updatedSavedVideos));
+    return true;
+  } catch (error) {
+    console.error('Error removing saved video:', error);
+    return false;
+  }
+};
+
+// Function to get all saved videos
+export const getSavedVideos = () => {
+  try {
+    const savedVideos = localStorage.getItem('savedVideos');
+    return savedVideos ? JSON.parse(savedVideos) : [];
+  } catch (error) {
+    console.error('Error getting saved videos:', error);
+    return [];
+  }
+};
+
+// Function to check if a video is saved
+export const isVideoSaved = (videoId) => {
+  try {
+    const savedVideos = getSavedVideos();
+    return savedVideos.some(v => v.id === videoId);
+  } catch (error) {
+    console.error('Error checking if video is saved:', error);
+    return false;
+  }
+};
+
 export { db };
 export default app; 
