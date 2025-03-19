@@ -532,12 +532,7 @@ const TrendingPage = () => {
                         sx={{ 
                           width: 36, 
                           height: 36, 
-                          background: video.tag && video.tag.includes('#tech') ? 'linear-gradient(135deg, #4364d9 0%, #5e35b1 100%)' : 
-                                   video.tag && video.tag.includes('#world') ? 'linear-gradient(135deg, #8c42f4 0%, #673ab7 100%)' :
-                                   video.tag && video.tag.includes('#israel') ? 'linear-gradient(135deg, #FF5252 0%, #d32f2f 100%)' :
-                                   video.tag && video.tag.includes('#breaking') ? 'linear-gradient(135deg, #FF9800 0%, #f57c00 100%)' :
-                                   video.tag && video.tag.includes('#generalnews') ? 'linear-gradient(135deg, #00E5FF 0%, #1976d2 100%)' : 
-                                   'linear-gradient(135deg, #3396ff 0%, #0288d1 100%)',
+                          background: 'linear-gradient(135deg, #7C4DFF 0%, #00E5FF 100%)',
                           fontSize: '0.9rem',
                           fontWeight: 'bold',
                           border: '2px solid rgba(255,255,255,0.15)',
@@ -824,12 +819,7 @@ const TrendingPage = () => {
                       width: 40, 
                       height: 40, 
                       mr: 1.5,
-                      background: fullscreenVideo.tag && fullscreenVideo.tag.includes('#tech') ? 'linear-gradient(135deg, #4364d9 0%, #5e35b1 100%)' : 
-                               fullscreenVideo.tag && fullscreenVideo.tag.includes('#world') ? 'linear-gradient(135deg, #8c42f4 0%, #673ab7 100%)' :
-                               fullscreenVideo.tag && fullscreenVideo.tag.includes('#israel') ? 'linear-gradient(135deg, #FF5252 0%, #d32f2f 100%)' :
-                               fullscreenVideo.tag && fullscreenVideo.tag.includes('#breaking') ? 'linear-gradient(135deg, #FF9800 0%, #f57c00 100%)' :
-                               fullscreenVideo.tag && fullscreenVideo.tag.includes('#generalnews') ? 'linear-gradient(135deg, #00E5FF 0%, #1976d2 100%)' : 
-                               'linear-gradient(135deg, #3396ff 0%, #0288d1 100%)',
+                      background: 'linear-gradient(135deg, #7C4DFF 0%, #00E5FF 100%)',
                       fontWeight: 'bold',
                       fontSize: '1rem',
                       border: '2px solid rgba(255,255,255,0.15)',

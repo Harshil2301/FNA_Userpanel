@@ -85,9 +85,12 @@ const Sidebar = () => {
           height: 32,
           borderRadius: '4px',
           backgroundColor: 'rgba(40, 40, 40, 0.7)',
-          transition: 'background-color 0.2s ease',
+          transition: 'all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1)',
+          backdropFilter: 'blur(5px)',
           '&:hover': {
             backgroundColor: 'rgba(60, 60, 60, 0.9)',
+            transform: 'scale(1.05)',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
           }
         }}
         onClick={handleToggleSidebar}
@@ -110,9 +113,12 @@ const Sidebar = () => {
           height: 32,
           borderRadius: '4px',
           backgroundColor: 'rgba(40, 40, 40, 0.7)',
-          transition: 'background-color 0.2s ease',
+          transition: 'all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1)',
+          backdropFilter: 'blur(5px)',
           '&:hover': {
             backgroundColor: 'rgba(60, 60, 60, 0.9)',
+            transform: 'scale(1.05)',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
           }
         }}
         onClick={handleToggleSidebar}
@@ -132,19 +138,23 @@ const Sidebar = () => {
           zIndex: 1200,
           borderRadius: 0,
           width: '240px',
-          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease',
+          transition: 'all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease',
           overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
-          boxShadow: hovering ? '0 5px 20px rgba(0,0,0,0.4)' : '0 2px 8px rgba(0,0,0,0.3)',
+          boxShadow: hovering ? '0 8px 30px rgba(0,0,0,0.4)' : '0 2px 8px rgba(0,0,0,0.3)',
           overflowY: 'auto',
           '@media (max-width: 600px)': {
             width: '100%',
             left: showSidebar ? 0 : '-100%',
           }
         }}
-        onMouseEnter={() => setHovering(true)}
-        onMouseLeave={() => setHovering(false)}
+        onMouseEnter={() => {
+          setHovering(true);
+        }}
+        onMouseLeave={() => {
+          setHovering(false);
+        }}
       >
         {/* Main Navigation */}
         <List component="nav" sx={{ p: 1, mt: 2 }}>
@@ -171,10 +181,11 @@ const Sidebar = () => {
                   position: 'relative',
                   overflow: 'hidden',
                   backgroundColor: isActive(item.path) ? 'rgba(124, 77, 255, 0.15)' : 'transparent',
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  transition: 'all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1)',
                   '&:hover': {
                     backgroundColor: isActive(item.path) ? 'rgba(124, 77, 255, 0.2)' : 'rgba(255,255,255,0.1)',
                     transform: 'translateY(-2px)',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
                   },
                   '&::before': hoveredItem === item.name && !isActive(item.path) ? {
                     content: '""',
@@ -186,6 +197,7 @@ const Sidebar = () => {
                     backgroundColor: 'var(--primary-color)',
                     borderRadius: '0 4px 4px 0',
                     opacity: 0.7,
+                    transition: 'all 0.2s ease-in-out',
                   } : {}
                 }}
               >
@@ -263,10 +275,11 @@ const Sidebar = () => {
                   position: 'relative',
                   overflow: 'hidden',
                   backgroundColor: isActive(item.path) ? 'rgba(124, 77, 255, 0.15)' : 'transparent',
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  transition: 'all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1)',
                   '&:hover': {
                     backgroundColor: isActive(item.path) ? 'rgba(124, 77, 255, 0.2)' : 'rgba(255,255,255,0.1)',
                     transform: 'translateY(-2px)',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
                   },
                   '&::before': hoveredItem === item.name && !isActive(item.path) ? {
                     content: '""',
@@ -278,6 +291,7 @@ const Sidebar = () => {
                     backgroundColor: 'var(--primary-color)',
                     borderRadius: '0 4px 4px 0',
                     opacity: 0.7,
+                    transition: 'all 0.2s ease-in-out',
                   } : {}
                 }}
               >
@@ -356,10 +370,11 @@ const Sidebar = () => {
                   position: 'relative',
                   overflow: 'hidden',
                   backgroundColor: isActive(item.path) ? 'rgba(124, 77, 255, 0.15)' : 'transparent',
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  transition: 'all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1)',
                   '&:hover': {
                     backgroundColor: isActive(item.path) ? 'rgba(124, 77, 255, 0.2)' : 'rgba(255,255,255,0.1)',
                     transform: 'translateY(-2px)',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
                   },
                   '&::before': hoveredItem === item.name && !isActive(item.path) ? {
                     content: '""',
@@ -371,6 +386,7 @@ const Sidebar = () => {
                     backgroundColor: 'var(--secondary-color)',
                     borderRadius: '0 4px 4px 0',
                     opacity: 0.7,
+                    transition: 'all 0.2s ease-in-out',
                   } : {}
                 }}
               >

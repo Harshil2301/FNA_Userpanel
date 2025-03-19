@@ -14,6 +14,10 @@
   --error-color: #CF6679;
   --text-primary: #FFFFFF;
   --text-secondary: rgba(255, 255, 255, 0.7);
+  --transition-standard: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.2);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+  --shadow-lg: 0 8px 20px rgba(0,0,0,0.4);
 }
 
 body {
@@ -72,4 +76,19 @@ a {
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.3);
+}
+
+/* Add smooth transitions to interactive elements */
+a, button, .MuiButton-root, .MuiIconButton-root, 
+.MuiPaper-root, .MuiCard-root, .MuiListItem-root, .MuiListItemIcon-root,
+.MuiListItemText-root, .MuiListItemAvatar-root, .MuiToolbar-root,
+.MuiSwitch-root, .MuiCheckbox-root, .MuiRadio-root, .MuiFormControl-root,
+.MuiSelect-root, .MuiAutocomplete-root, input, select, .MuiTextField-root,
+.MuiInputBase-root, .MuiOutlinedInput-root, .MuiFilledInput-root,
+.MuiInputLabel-root, .MuiInputAdornment-root, .MuiMenu-root, .MuiMenuItem-root,
+.MuiAvatar-root, .MuiTab-root, .MuiBadge-root, .MuiBreadcrumbs-root, .MuiTooltip-root,
+.MuiBackdrop-root, .MuiSnackbar-root, .MuiAlert-root, .MuiDialog-root, .MuiDialogTitle-root,
+.MuiDialogContent-root, .MuiDialogActions-root, .MuiPopover-root, .MuiSvgIcon-root,
+.MuiLink-root, .MuiTypography-root, .MuiBox-root {
+  transition: var(--transition-standard);
 }

@@ -205,6 +205,44 @@ body {
   }
 }
 
+/* Page transition animations */
+.page-enter {
+  opacity: 0;
+  transform: translateY(15px);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 400ms ease-out, transform 400ms ease-out;
+}
+
+.page-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.page-exit-active {
+  opacity: 0;
+  transform: translateY(-15px);
+  transition: opacity 350ms ease-in, transform 350ms ease-in;
+}
+
+/* Content fade-in animation */
+.content-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Card hover effects */
+.card-hover {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
 .App {
   animation: fadeIn 0.5s ease forwards;
 }
