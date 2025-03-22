@@ -246,3 +246,15 @@ body {
 .App {
   animation: fadeIn 0.5s ease forwards;
 }
+
+/* Content spacing */
+body {
+  overflow-x: visible !important;
+}
+
+/* Main content area adjustment */
+.App main {
+  min-height: calc(100vh - 64px);
+  padding-top: 20px;
+  padding-left: 15px; /* Add padding to prevent content from being behind the half-circle */
+}

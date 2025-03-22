@@ -88,7 +88,7 @@ const notificationsData = [
   }
 ];
 
-const Navbar = () => {
+const Navbar = ({ onSidebarToggle }) => {
   const [searchFocused, setSearchFocused] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -98,7 +98,7 @@ const Navbar = () => {
   const [notifications, setNotifications] = useState(notificationsData);
   const [qrDialogOpen, setQrDialogOpen] = useState(false);
   const [aboutQrDialogOpen, setAboutQrDialogOpen] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const isDownMd = useMediaQuery(theme.breakpoints.down('md'));
@@ -207,32 +207,25 @@ const Navbar = () => {
     const newState = !sidebarOpen;
     setSidebarOpen(newState);
     
-    // Add a slight delay before dispatching the event for smoother animation
-    setTimeout(() => {
-      // Dispatch custom event to notify Sidebar component
+    // Call the prop function if it exists
+    if (onSidebarToggle) {
+      onSidebarToggle();
+    } else {
+      // Fallback to dispatching the event directly
       window.dispatchEvent(new CustomEvent('sidebarToggle', { 
         detail: { isOpen: newState }
       }));
-    }, 10);
+    }
   };
 
   return (
     <AppBar 
       position="fixed" 
-      className={`navbar ${scrolled ? 'navbar-scrolled' : ''}`}
       sx={{ 
-        backgroundColor: scrolled ? 'rgba(24,24,24,0.95)' : 'rgba(26,26,26,0.8)', 
-        backdropFilter: 'blur(10px)',
-        boxShadow: scrolled ? '0 4px 20px rgba(0,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.1)',
-        borderBottom: '1px solid rgba(255,255,255,0.05)',
-        width: '100%',
-        left: 0,
-        right: 0,
-        top: 0,
-        margin: 0,
-        padding: 0,
-        zIndex: 1300,
-        transition: 'background-color 0.3s ease, box-shadow 0.3s ease',
+        zIndex: 1400, 
+        backgroundColor: '#0a0a0a',
+        boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.5)',
+        height: '70px',
       }}
     >
       <Toolbar sx={{ 
@@ -243,26 +236,44 @@ const Navbar = () => {
         px: { xs: 2, sm: 3, md: 4 },
       }}>
         {/* Logo on left with hamburger menu */}
-        <Box sx={{ display: 'flex', alignItems: 'center', width: isMobile ? '30%' : '20%' }}>
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          width: isMobile ? '30%' : '20%',
+          gap: 1 // Add consistent spacing between hamburger and logo
+        }}>
           {isSmallOrMedium && (
-            <IconButton 
-              edge="start"
-              color="inherit" 
-              aria-label="menu"
-              onClick={handleToggleSidebar}
-              sx={{ 
-                mr: 1,
-                display: {xs: 'flex', lg: 'none'},
-                color: 'white' 
-              }}
-            >
-              <FaBars />
-            </IconButton>
+            <Tooltip title={sidebarOpen ? "Close Navigation" : "Open Navigation"}>
+              <IconButton 
+                edge="start"
+                color="inherit" 
+                aria-label={sidebarOpen ? "close menu" : "open menu"}
+                onClick={handleToggleSidebar}
+                sx={{ 
+                  mr: { xs: 2, sm: 3 },
+                  ml: { xs: 1.5, sm: 1 },
+                  display: {xs: 'flex', lg: 'none'},
+                  color: 'white',
+                  transition: 'transform 0.3s ease',
+                  transform: sidebarOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+                  height: '32px',
+                  width: '32px',
+                  padding: '6px',
+                  my: 'auto',
+                  alignSelf: 'center',
+                  '&:hover': { 
+                    bgcolor: 'rgba(255,255,255,0.08)'
+                  }
+                }}
+              >
+                {sidebarOpen ? <FaTimes size={18} /> : <FaBars size={18} />}
+              </IconButton>
+            </Tooltip>
           )}
           
           <Link to="/" className="logo-link" style={{ display: 'flex', alignItems: 'center' }}>
             <img 
-              src={logo} 
+              src={useMediaQuery(theme.breakpoints.down('sm')) ? `${process.env.PUBLIC_URL}/short_logo.svg` : logo}
               alt="FNA.ai Logo" 
               className="navbar-logo" 
               style={{ 
@@ -353,7 +364,7 @@ const Navbar = () => {
                   textTransform: 'none',
                   px: 1.5,
                   py: 0.5,
-                  fontSize: '0.85rem',
+                  fontSize: '0.75rem',
                   fontWeight: 600,
                   minWidth: 0,
                   ml: 'auto', // Push to the right
@@ -361,6 +372,7 @@ const Navbar = () => {
                   alignItems: 'center',
                   gap: '4px',
                   border: '2px solid #8e60ff',
+                  whiteSpace: 'nowrap',
                   '&:hover': {
                     transform: 'translateY(-2px)',
                     boxShadow: '0 4px 12px rgba(124, 77, 255, 0.4)',
@@ -368,8 +380,8 @@ const Navbar = () => {
                   }
                 }}
               >
-                <QrCode2Icon sx={{ fontSize: 16 }} />
-                Get Web
+                <QrCode2Icon sx={{ fontSize: 14 }} />
+                Web
               </Button>
               
               {/* Notification icon - also visible on mobile */}

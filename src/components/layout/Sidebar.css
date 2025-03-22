@@ -199,6 +199,19 @@
     margin-right: 0 !important;
     justify-content: center;
   }
+  
+  /* Add space between section icons and names for small screens */
+  .sidebar .MuiListItem-button {
+    padding: 8px 12px !important;
+  }
+  
+  .sidebar:not(.collapsed) .MuiListItemIcon-root {
+    margin-right: 16px !important;
+  }
+  
+  .sidebar:not(.collapsed) .MuiListItemText-primary {
+    font-size: 15px !important;
+  }
 }
 
 /* Animation */

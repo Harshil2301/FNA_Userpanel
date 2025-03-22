@@ -14,26 +14,8 @@ const NewsList = ({ category }) => {
         setLoading(true);
         const videoData = await fetchVideos(6, category);
         
-        // Add example data matching the reference image for the first two videos
-        if (videoData.length >= 2) {
-          videoData[0] = {
-            ...videoData[0],
-            caption: 'News about Climate',
-            overview: 'Weather News',
-            tag: 'news',
-            uploader: 'Harshil',
-            timestamp: new Date('2025-03-18')
-          };
-          
-          videoData[1] = {
-            ...videoData[1],
-            caption: 'New Report',
-            overview: 'Genral Daily News on Climate',
-            tag: 'generalnews',
-            uploader: 'Shrey',
-            timestamp: new Date('2025-03-07')
-          };
-        }
+        // Remove the override for the first two videos that's causing incorrect data
+        // The server should provide the correct data for all videos
         
         setVideos(videoData);
         setLoading(false);

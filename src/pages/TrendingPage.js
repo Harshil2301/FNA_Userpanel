@@ -84,21 +84,10 @@ const TrendingPage = () => {
 
     const searchTermLower = searchParam.toLowerCase();
     const filtered = videos.filter(video => {
-      // Create sample data if video data is incomplete
-      const newsTypes = [
-        { title: "NEW REPORT", subtitle: "General Daily News on Climate", tags: ["#generalnews", "#news"] },
-        { title: "ISRAEL NEWS", subtitle: "Attack News on Israel", tags: ["#news", "#attack", "#israel"] }, 
-        { title: "NEWS ABOUT CLIMATE", subtitle: "Weather News", tags: ["#news", "#climate"] },
-        { title: "WORLD NEWS", subtitle: "International Updates", tags: ["#news", "#world"] },
-        { title: "TECHNOLOGY NEWS", subtitle: "Latest in Tech", tags: ["#tech", "#news"] },
-        { title: "BREAKING NEWS", subtitle: "Urgent Updates", tags: ["#breaking", "#news"] }
-      ];
-      
-      const index = videos.indexOf(video) % newsTypes.length;
-      const newsItem = newsTypes[index];
-      const title = video.caption || newsItem.title;
-      const subtitle = video.overview || newsItem.subtitle;
-      const tags = video.tag ? video.tag.split(' ') : newsItem.tags;
+      // Don't use sample data, use only the actual data from Firebase
+      const title = video.caption || '';
+      const subtitle = video.overview || '';
+      const tags = video.tag ? video.tag.split(' ') : [];
       
       // Check if search term is in any of the video's content
       return (
@@ -269,21 +258,6 @@ const TrendingPage = () => {
       <Box sx={{ mb: 4 }}>
         {filteredVideos.length > 0 ? (
           filteredVideos.map((video, index) => {
-            // Create sample data based on the reference image
-            const newsTypes = [
-              { title: "NEW REPORT", subtitle: "General Daily News on Climate", tags: ["#generalnews", "#news"] },
-              { title: "ISRAEL NEWS", subtitle: "Attack News on Israel", tags: ["#news", "#attack", "#israel"] }, 
-              { title: "NEWS ABOUT CLIMATE", subtitle: "Weather News", tags: ["#news", "#climate"] },
-              { title: "WORLD NEWS", subtitle: "International Updates", tags: ["#news", "#world"] },
-              { title: "TECHNOLOGY NEWS", subtitle: "Latest in Tech", tags: ["#tech", "#news"] },
-              { title: "BREAKING NEWS", subtitle: "Urgent Updates", tags: ["#breaking", "#news"] }
-            ];
-            
-            // Use sample data if video data is incomplete
-            const newsItem = newsTypes[index % newsTypes.length];
-            const displayTitle = video.caption || newsItem.title;
-            const displaySubtitle = video.overview || newsItem.subtitle;
-            const displayTags = video.tag ? video.tag.split(' ') : newsItem.tags;
             const videoUrl = getVideoUrl(video.videoHash);
             const isPlaying = activeVideo === video.id;
             const isMuted = mutedVideos[video.id];
@@ -469,7 +443,7 @@ const TrendingPage = () => {
                           WebkitTextFillColor: 'transparent',
                         }}
                       >
-                        {displayTitle}
+                        {video.caption || 'News Report'}
                       </Typography>
                       <Typography 
                         variant="subtitle2" 
@@ -477,12 +451,12 @@ const TrendingPage = () => {
                         component="div" 
                         sx={{ mb: 1.5, opacity: 0.8 }}
                       >
-                        {displaySubtitle}
+                        {video.overview || 'No description available'}
                       </Typography>
                       
                       {/* Tags */}
                       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.8, mb: 1.5 }}>
-                        {displayTags.map((tag, idx) => (
+                        {video.tag ? video.tag.split(' ').map((tag, idx) => (
                           <Chip
                             key={idx}
                             label={tag}
@@ -500,7 +474,7 @@ const TrendingPage = () => {
                               }
                             }}
                           />
-                        ))}
+                        )) : null}
                       </Box>
                       
                       {/* Stats */}

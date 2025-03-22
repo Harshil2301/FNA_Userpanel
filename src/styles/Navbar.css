@@ -233,14 +233,33 @@
   }
 }
 
-/* Fix for mobile */
+/* Improved logo and hamburger alignment */
+.MuiToolbar-root {
+  display: flex;
+  align-items: center;
+}
+
+.logo-link {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-logo {
+  vertical-align: middle;
+  display: inline-block;
+}
+
+/* Better hamburger alignment on mobile */
 @media (max-width: 600px) {
-  .navbar-logo {
-    height: 32px;
+  .MuiToolbar-root {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+    gap: 8px;
   }
   
-  .icon-button {
-    width: 32px !important;
-    height: 32px !important;
+  .MuiIconButton-root {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 } 

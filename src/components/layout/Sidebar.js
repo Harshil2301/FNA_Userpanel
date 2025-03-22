@@ -10,6 +10,7 @@ import { FaHome, FaNewspaper, FaFireAlt, FaFootballBall, FaTv, FaGraduationCap,
 import { Link, useLocation } from 'react-router-dom';
 import { QRCodeSVG } from 'qrcode.react';
 import './Sidebar.css';
+import { KeyboardArrowLeft as KeyboardArrowLeftIcon } from '@mui/icons-material';
 
 const Sidebar = () => {
   const location = useLocation();
@@ -130,7 +131,7 @@ const Sidebar = () => {
   return (
     <>
       {/* Backdrop for mobile */}
-      {isMobile && showSidebar && (
+      {showSidebar && !isLargeScreen && (
         <Box
           onClick={handleToggleSidebar}
           sx={{
@@ -140,10 +141,10 @@ const Sidebar = () => {
             right: 0,
             bottom: 0,
             backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            backdropFilter: 'blur(3px)',
             zIndex: 1199,
             transition: 'opacity 0.3s ease',
             opacity: showSidebar ? 1 : 0,
-            backdropFilter: 'blur(2px)',
             pointerEvents: showSidebar ? 'auto' : 'none',
           }}
         />
@@ -151,7 +152,7 @@ const Sidebar = () => {
       
       {/* Sidebar */}
       <Box 
-        className={`sidebar ${collapsed && isLargeScreen ? 'collapsed' : ''}`}
+        className={`sidebar ${collapsed && isLargeScreen ? 'collapsed' : ''} ${!showSidebar ? 'hidden' : ''}`}
         sx={{ 
           bgcolor: '#1A1A1A', 
           height: '100vh',
@@ -161,19 +162,21 @@ const Sidebar = () => {
           zIndex: 1200,
           borderRadius: 0,
           width: collapsed && isLargeScreen ? '64px' : '240px',
-          transition: 'all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1), box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1), width 0.4s cubic-bezier(0.25, 0.1, 0.25, 1)',
+          transition: 'all 0.5s cubic-bezier(0.25, 0.1, 0.25, 1), box-shadow 0.3s ease, transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1), width 0.5s cubic-bezier(0.25, 0.1, 0.25, 1)',
           transform: showSidebar ? 'translateX(0)' : 'translateX(-100%)',
           overflow: 'visible',
           display: 'flex',
           flexDirection: 'column',
           boxShadow: hovering ? '0 8px 30px rgba(0,0,0,0.4)' : '0 2px 8px rgba(0,0,0,0.3)',
           overflowY: 'auto',
-          p: 1,
+          p: { xs: 1.5, sm: 2 },
+          bottom: 0,  // Extend to the bottom of the viewport
           '@media (max-width: 600px)': {
             width: '240px',
-            maxWidth: '80%',
+            maxWidth: '85%',
             left: 0,
             transform: showSidebar ? 'translateX(0)' : 'translateX(-100%)',
+            boxShadow: '4px 0 24px rgba(0,0,0,0.5)'
           }
         }}
         onMouseEnter={() => {
@@ -183,7 +186,8 @@ const Sidebar = () => {
           setHovering(false);
         }}
       >
-        {/* Hamburger menu for collapsed sidebar - only show on large screens */}
+        {/* Only show hamburger menu for collapsed sidebar on large screens */}
+        {/* 
         {collapsed && isLargeScreen && !isMediumScreen && (
           <Box
             className="sidebar-hamburger-btn"
@@ -224,72 +228,63 @@ const Sidebar = () => {
             </IconButton>
           </Box>
         )}
+        */}
 
-        {/* Toggle button for sidebar - only show on large screens and not medium */}
-        {isLargeScreen && !collapsed && !isMediumScreen && (
-          <Box 
-            className="sidebar-toggle-btn"
-            sx={{ 
-              position: 'absolute', 
+        {/* Toggle Button - only show on large screens */}
+        {isLargeScreen && (
+          <Box
+            className="sidebar-toggle-container"
+            sx={{
+              position: 'absolute',
               right: 0,
-              top: '20px', 
-              zIndex: 2000,
-              transition: 'all 0.3s ease', 
-              opacity: 1,
-              display: 'flex',
-              alignItems: 'center',
+              top: '20px',
               transform: 'translateX(50%)',
-              boxShadow: 'none',
+              zIndex: 2000,
               overflow: 'visible',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
             }}
           >
             <IconButton
               onClick={handleCollapseSidebar}
-              aria-label="Collapse sidebar"
+              className="sidebar-toggle-button"
               sx={{
-                color: 'white',
-                backgroundColor: '#1A1A1A',
-                border: '2px solid white',
-                borderRadius: '50%',
-                p: 0.5,
-                width: 28,
-                height: 28,
-                '&:hover': {
-                  backgroundColor: '#7C4DFF',
-                  color: 'white',
-                  border: '2px solid white',
-                  boxShadow: 'none',
-                  transform: 'scale(1.05)',
-                },
+                bgcolor: 'background.paper',
+                color: 'text.primary',
+                width: '36px',
+                height: '36px',
                 transition: 'all 0.3s ease',
-                boxShadow: '0 2px 6px rgba(0,0,0,0.6)',
+                borderRadius: '50%',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                '&:hover': {
+                  bgcolor: 'action.hover',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
+                },
+                transform: collapsed && isLargeScreen ? 'rotate(180deg)' : 'rotate(0deg)',
               }}
             >
-              <FaChevronLeft size={14} />
+              <KeyboardArrowLeftIcon sx={{ fontSize: '20px' }} />
             </IconButton>
           </Box>
         )}
 
         {/* Main Navigation */}
-        <List component="nav" sx={{ 
-          p: 1, 
-          mt: collapsed && isLargeScreen ? 7 : 0,
-          opacity: showSidebar ? 1 : 0,
-          transition: 'opacity 0.3s ease',
-          transitionDelay: showSidebar ? '0.1s' : '0s',
-          ...(collapsed && isLargeScreen && {
-            pl: 0.5,
-            pr: 0.5,
-            mt: 8,
-          })
-        }}>
+        <List 
+          component="nav" 
+          sx={{ 
+            p: { xs: 1, sm: 1.5 },
+            mt: isLargeScreen ? (collapsed ? 4 : 0) : 1,
+            display: 'flex',
+            flexDirection: 'column'
+          }}
+        >
           {mainItems.map((item) => (
             <Tooltip 
               key={item.name}
               title={collapsed && isLargeScreen ? item.name : ""}
               placement="right"
               arrow
-              disableHoverListener={!(collapsed && isLargeScreen)}
             >
               <ListItem
                 button
@@ -330,17 +325,18 @@ const Sidebar = () => {
                   sx={{ 
                     minWidth: collapsed && isLargeScreen ? 0 : 40, 
                     color: isActive(item.path) ? '#7C4DFF' : 'rgba(255,255,255,0.7)',
-                    mr: collapsed && isLargeScreen ? 0 : 1,
+                    mr: (collapsed && isLargeScreen) ? 0 : { xs: 3, sm: 2.5, md: 1.5 },
                     transition: 'color 0.3s ease',
                   }}
                 >
                   {item.icon}
                 </ListItemIcon>
+                
                 {(!collapsed || !isLargeScreen) && (
                   <ListItemText 
                     primary={item.name} 
-                    primaryTypographyProps={{ 
-                      fontSize: '0.95rem',
+                    primaryTypographyProps={{
+                      fontSize: { xs: '1rem', sm: '0.95rem' },
                       fontWeight: isActive(item.path) ? 'bold' : 'normal',
                       color: isActive(item.path) ? 'white' : 'rgba(255,255,255,0.7)',
                       transition: 'color 0.3s ease',
@@ -439,7 +435,7 @@ const Sidebar = () => {
                       sx={{ 
                         minWidth: 40, 
                         color: isActive(item.path) ? '#7C4DFF' : 'rgba(255,255,255,0.7)',
-                        mr: 1 
+                        mr: { xs: 3, sm: 2.5, md: 1.5 }
                       }}
                     >
                       {item.icon}
@@ -447,7 +443,7 @@ const Sidebar = () => {
                     <ListItemText 
                       primary={item.name} 
                       primaryTypographyProps={{ 
-                        fontSize: '0.95rem',
+                        fontSize: { xs: '1rem', sm: '0.95rem' },
                         fontWeight: isActive(item.path) ? 'bold' : 'normal',
                         color: isActive(item.path) ? 'white' : 'rgba(255,255,255,0.7)'
                       }} 
@@ -543,7 +539,7 @@ const Sidebar = () => {
                       sx={{ 
                         minWidth: 40, 
                         color: 'rgba(255,255,255,0.7)',
-                        mr: 1
+                        mr: { xs: 3, sm: 2.5, md: 1.5 }
                       }}
                     >
                       {item.icon}
@@ -551,7 +547,7 @@ const Sidebar = () => {
                     <ListItemText 
                       primary={item.name} 
                       primaryTypographyProps={{ 
-                        fontSize: '0.95rem',
+                        fontSize: { xs: '1rem', sm: '0.95rem' },
                         color: 'rgba(255,255,255,0.7)'
                       }} 
                     />
