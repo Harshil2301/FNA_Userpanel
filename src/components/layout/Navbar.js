@@ -101,7 +101,9 @@ const Navbar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const isSmallOrMedium = useMediaQuery(theme.breakpoints.down('lg'));
+  const isDownMd = useMediaQuery(theme.breakpoints.down('md'));
+  const isWithinMediumRange = useMediaQuery('(min-width: 600px) and (max-width: 1023px)');
+  const isSmallOrMedium = isDownMd || isWithinMediumRange;
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -249,18 +251,12 @@ const Navbar = () => {
               aria-label="menu"
               onClick={handleToggleSidebar}
               sx={{ 
-                mr: 1.5,
-                p: 1,
-                ml: { xs: 1, sm: 0 },
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                '&:hover': {
-                  backgroundColor: 'rgba(255,255,255,0.08)',
-                }
+                mr: 1,
+                display: {xs: 'flex', lg: 'none'},
+                color: 'white' 
               }}
             >
-              {sidebarOpen ? <FaTimes size={18} /> : <FaBars size={18} />}
+              <FaBars />
             </IconButton>
           )}
           

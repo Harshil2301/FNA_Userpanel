@@ -9,6 +9,7 @@
   position: relative; /* Changed from sticky to relative for better positioning */
   top: 0; /* Remove the top margin */
   max-height: 100vh;
+  overflow: visible !important; /* This is crucial to allow the button to be visible */
 }
 
 .sidebar.collapsed {
@@ -30,67 +31,52 @@
 /* Sidebar toggle button positioning */
 .sidebar-toggle-btn {
   position: absolute;
-  right: -12px; /* Move it closer to the sidebar */
-  top: 84px;
-  z-index: 1500;
+  right: 0;
+  top: 20px;
+  z-index: 2000; /* Very high z-index to ensure visibility */
   display: flex;
   justify-content: center;
   align-items: center;
+  transform: translateX(50%); /* Position half of the button outside sidebar */
+  overflow: visible;
+  pointer-events: auto;
 }
 
 /* Adjust when sidebar is collapsed */
 .sidebar.collapsed .sidebar-toggle-btn {
-  right: -30px;
-  left: auto;
-  top: 84px;
-  transform: none;
+  display: none; /* Hide when collapsed, we'll use the hamburger instead */
 }
 
 /* Toggle button styling */
 .sidebar-toggle-btn button {
   position: relative;
-  z-index: 2;
-  border: 2px solid #7C4DFF !important;
-  background-color: #7C4DFF !important;
-  width: 40px !important;
-  height: 45px !important;
+  z-index: 2001; /* Even higher z-index to ensure clickability */
+  border: 2px solid white !important;
+  background-color: #1A1A1A !important;
+  width: 28px !important;
+  height: 28px !important;
   color: white !important;
-  transition: all 0.2s ease !important;
+  transition: all 0.3s ease !important;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6) !important;
+  pointer-events: auto;
 }
 
 .sidebar-toggle-btn button:hover {
   border-color: white !important;
   color: white !important;
-  background-color: #8D67FF !important;
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.6) !important;
+  background-color: #7C4DFF !important;
+  box-shadow: none !important;
+  transform: scale(1.05) !important;
 }
 
-/* Make sure the button stands out with a background halo */
-.sidebar-toggle-btn::before {
-  content: '';
-  position: absolute;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: #7C4DFF;
-  z-index: 1;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.8);
-}
-
-/* Attention-grabbing pulse animation for the toggle button */
-@keyframes pulseAttention {
-  0% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(124, 77, 255, 0.7);
-  }
-  70% {
-    transform: scale(1.05);
-    box-shadow: 0 0 0 6px rgba(124, 77, 255, 0);
-  }
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(124, 77, 255, 0);
-  }
+/* Fix for the toggle button to ensure it's fully visible */
+.sidebar-toggle-btn:before {
+  display: none; /* Remove the background halo that could be causing issues */
 }
 
 /* Add an indicator tooltip for users */
@@ -265,20 +251,22 @@
 
 /* Content spacing */
 body {
-  overflow-x: hidden;
+  overflow-x: visible !important;
 }
 
 /* Main content area adjustment */
 .App main {
   min-height: calc(100vh - 64px);
   padding-top: 20px;
+  padding-left: 15px; /* Add padding to prevent content from being behind the half-circle */
 }
 
 /* Hamburger button for collapsed sidebar */
 .sidebar-hamburger-btn {
   position: absolute;
-  left: 12px;
-  top: 10px; /* Moved up to avoid overlap */
+  left: 50%;
+  top: 16px;
+  transform: translateX(-50%);
   z-index: 1500;
   display: flex;
   justify-content: center;
@@ -289,31 +277,27 @@ body {
 .sidebar-hamburger-btn button {
   position: relative;
   z-index: 2;
-  border: 2px solid #7C4DFF !important;
+  border: 2px solid white !important;
   background-color: #1A1A1A !important;
-  width: 40px !important;
-  height: 40px !important;
-  color: #7C4DFF !important;
+  width: 28px !important;
+  height: 28px !important;
+  color: white !important;
   transition: all 0.3s ease !important;
+  padding: 0 !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6) !important;
 }
 
 .sidebar-hamburger-btn button:hover {
   border-color: white !important;
   color: white !important;
-  background-color: #1A1A1A !important;
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.6) !important;
+  background-color: #7C4DFF !important;
+  box-shadow: none !important;
+  transform: scale(1.05) !important;
 }
 
-/* Hamburger button background halo */
+/* Hamburger button background halo - removed to simplify */
 .sidebar-hamburger-btn::before {
-  content: '';
-  position: absolute;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: #1A1A1A;
-  z-index: 1;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.8);
+  display: none;
 }
 
 /* Add tooltip for hamburger button */

@@ -15,17 +15,34 @@ const Sidebar = () => {
   const location = useLocation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const isLargeScreen = useMediaQuery(theme.breakpoints.up('lg'));
+  const isLargeScreen = useMediaQuery('(min-width: 1024px)');
+  const isMediumScreen = useMediaQuery('(min-width: 600px) and (max-width: 1023px)');
   const [collapsed, setCollapsed] = useState(false);
   const [hoveredItem, setHoveredItem] = useState(null);
   const [hovering, setHovering] = useState(false);
-  const [showSidebar, setShowSidebar] = useState(!isMobile);
+  const [showSidebar, setShowSidebar] = useState(true);
   const [aboutQrDialogOpen, setAboutQrDialogOpen] = useState(false);
   
-  // Check for mobile view and set collapsed state
+  // Handle sidebar toggle based on window resize and initial state
   useEffect(() => {
-    setShowSidebar(!isMobile);
-  }, [isMobile]);
+    const handleResize = () => {
+      if (window.innerWidth < 1024) {
+        // Mobile and tablet behavior 
+        if (!isMobile && !isMediumScreen) {
+          setCollapsed(true);
+          setShowSidebar(false);
+        }
+      } else {
+        // Desktop behavior - show sidebar by default
+        setShowSidebar(true);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    handleResize(); // Initial check
+    
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isMobile, isMediumScreen]);
   
   // Initialize sidebar state in App.js
   useEffect(() => {
@@ -57,19 +74,19 @@ const Sidebar = () => {
   };
   
   const handleToggleSidebar = () => {
-    setShowSidebar(!showSidebar);
-    // Dispatch custom event to notify App.js about sidebar toggle
-    window.dispatchEvent(new CustomEvent('sidebarToggle', { 
-      detail: { isOpen: !showSidebar, collapsed: collapsed }
-    }));
+    if (isMobile) {
+      setShowSidebar(!showSidebar);
+    }
   };
   
   const handleCollapseSidebar = () => {
-    setCollapsed(!collapsed);
-    // Dispatch custom event to notify App.js about sidebar collapse
-    window.dispatchEvent(new CustomEvent('sidebarToggle', { 
-      detail: { isOpen: showSidebar, collapsed: !collapsed }
-    }));
+    if (isLargeScreen) {
+      setCollapsed(!collapsed);
+      // Dispatch custom event to notify App.js about sidebar collapse
+      window.dispatchEvent(new CustomEvent('sidebarToggle', { 
+        detail: { isOpen: showSidebar, collapsed: !collapsed }
+      }));
+    }
   };
 
   // Handle About QR dialog
@@ -144,9 +161,9 @@ const Sidebar = () => {
           zIndex: 1200,
           borderRadius: 0,
           width: collapsed && isLargeScreen ? '64px' : '240px',
-          transition: 'all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1), box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0.0, 0.2, 1)',
+          transition: 'all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1), box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1), width 0.4s cubic-bezier(0.25, 0.1, 0.25, 1)',
           transform: showSidebar ? 'translateX(0)' : 'translateX(-100%)',
-          overflow: 'hidden',
+          overflow: 'visible',
           display: 'flex',
           flexDirection: 'column',
           boxShadow: hovering ? '0 8px 30px rgba(0,0,0,0.4)' : '0 2px 8px rgba(0,0,0,0.3)',
@@ -166,79 +183,64 @@ const Sidebar = () => {
           setHovering(false);
         }}
       >
-        {/* Hamburger menu for collapsed sidebar - positioned above home icon */}
-        {collapsed && isLargeScreen && (
+        {/* Hamburger menu for collapsed sidebar - only show on large screens */}
+        {collapsed && isLargeScreen && !isMediumScreen && (
           <Box
             className="sidebar-hamburger-btn"
             sx={{
               position: 'absolute',
-              left: '12px',
-              top: '10px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              top: '16px',
               zIndex: 1500,
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
-            }}
-            onMouseEnter={() => {
-              // Use a timeout to make the transition smoother
-              setTimeout(() => {
-                setCollapsed(false);
-                // Dispatch custom event to notify App.js about sidebar collapse
-                window.dispatchEvent(new CustomEvent('sidebarToggle', { 
-                  detail: { isOpen: showSidebar, collapsed: false }
-                }));
-              }, 50);
             }}
           >
             <IconButton
               onClick={handleCollapseSidebar}
               aria-label="Expand sidebar"
               sx={{
-                color: '#7C4DFF',
+                color: 'white',
                 backgroundColor: '#1A1A1A',
-                border: '2px solid #7C4DFF',
+                border: '2px solid white',
                 borderRadius: '50%',
-                p: 1,
-                width: 44,
-                height: 44,
+                p: 0.5,
+                width: 28,
+                height: 28,
                 '&:hover': {
-                  backgroundColor: '#1A1A1A',
+                  backgroundColor: '#7C4DFF',
                   color: 'white',
                   border: '2px solid white',
-                  boxShadow: '0 0 15px rgba(255, 255, 255, 0.6)',
+                  boxShadow: 'none',
+                  transform: 'scale(1.05)',
                 },
                 transition: 'all 0.3s ease',
-                boxShadow: '0 3px 8px rgba(0,0,0,0.8), 0 0 10px rgba(124, 77, 255, 0.4)',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.6)',
               }}
             >
-              <FaBars size={22} />
+              <FaBars size={14} />
             </IconButton>
           </Box>
         )}
 
-        {/* Arrow button for expanded sidebar - only on large screens */}
-        {isLargeScreen && !collapsed && (
+        {/* Toggle button for sidebar - only show on large screens and not medium */}
+        {isLargeScreen && !collapsed && !isMediumScreen && (
           <Box 
             className="sidebar-toggle-btn"
             sx={{ 
               position: 'absolute', 
-              right: '-15px',
-              top: '84px', 
-              zIndex: 1500,
+              right: 0,
+              top: '20px', 
+              zIndex: 2000,
               transition: 'all 0.3s ease', 
               opacity: 1,
               display: 'flex',
               alignItems: 'center',
-            }}
-            onMouseEnter={() => {
-              // Use a timeout to make the transition smoother
-              setTimeout(() => {
-                setCollapsed(true);
-                // Dispatch custom event to notify App.js about sidebar collapse
-                window.dispatchEvent(new CustomEvent('sidebarToggle', { 
-                  detail: { isOpen: showSidebar, collapsed: true }
-                }));
-              }, 50);
+              transform: 'translateX(50%)',
+              boxShadow: 'none',
+              overflow: 'visible',
             }}
           >
             <IconButton
@@ -246,23 +248,24 @@ const Sidebar = () => {
               aria-label="Collapse sidebar"
               sx={{
                 color: 'white',
-                backgroundColor: '#7C4DFF',
-                border: '2px solid #7C4DFF',
+                backgroundColor: '#1A1A1A',
+                border: '2px solid white',
                 borderRadius: '50%',
                 p: 0.5,
-                width: 40,
-                height: 40,
+                width: 28,
+                height: 28,
                 '&:hover': {
-                  backgroundColor: '#8D67FF',
+                  backgroundColor: '#7C4DFF',
                   color: 'white',
                   border: '2px solid white',
-                  boxShadow: '0 0 15px rgba(255, 255, 255, 0.6)',
+                  boxShadow: 'none',
+                  transform: 'scale(1.05)',
                 },
-                transition: 'all 0.2s ease',
-                boxShadow: '0 3px 8px rgba(0,0,0,0.8), 0 0 10px rgba(124, 77, 255, 0.4)',
+                transition: 'all 0.3s ease',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.6)',
               }}
             >
-              <FaChevronLeft size={22} />
+              <FaChevronLeft size={14} />
             </IconButton>
           </Box>
         )}
@@ -277,6 +280,7 @@ const Sidebar = () => {
           ...(collapsed && isLargeScreen && {
             pl: 0.5,
             pr: 0.5,
+            mt: 8,
           })
         }}>
           {mainItems.map((item) => (
@@ -382,7 +386,7 @@ const Sidebar = () => {
             
             <List component="nav" sx={{ 
               p: 1, 
-              flexGrow: 0, // Change from 1 to 0 to prevent excessive stretching
+              flexGrow: 0,
               overflowY: 'auto',
               opacity: showSidebar ? 1 : 0,
               transition: 'opacity 0.3s ease',

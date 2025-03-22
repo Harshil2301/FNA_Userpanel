@@ -129,17 +129,22 @@ function App() {
             backgroundColor: '#121212', 
             minHeight: '100vh', 
             color: 'white',
-            paddingTop: '64px', // Just enough for the navbar
-            transition: 'all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1)' // Smoother transition
+            paddingTop: '64px',
+            transition: 'all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1)',
+            position: 'relative',
+            overflow: 'visible'
           }}>
             <Sidebar />
             <Box component="main" sx={{ 
               flexGrow: 1, 
               p: { xs: 1, sm: 2, md: 3 },
-              ml: sidebarCollapsed ? 8 : 30, // Adjust based on sidebar width
+              pl: { xs: 2, sm: 3, md: 4 },
+              ml: sidebarCollapsed ? 8 : 30,
               width: '100%',
-              transition: 'margin-left 0.4s cubic-bezier(0.25, 0.1, 0.25, 1)', // Smoother transition
-              paddingTop: 1
+              transition: 'margin-left 0.4s cubic-bezier(0.25, 0.1, 0.25, 1)',
+              paddingTop: 1,
+              overflow: 'visible',
+              position: 'relative'
             }}>
               <Routes>
                 <Route path="/" element={<HomePage />} />
