@@ -2,12 +2,141 @@
   padding: 10px;
   height: calc(100vh - 64px); /* Account for navbar height */
   overflow-y: auto;
-  transition: all 0.3s ease;
-  border-radius: 8px;
+  transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) !important;
+  will-change: transform, width;
+  border-radius: 0; /* Remove border radius */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  position: sticky;
-  top: 1rem;
-  max-height: calc(100vh - 2rem);
+  position: relative; /* Changed from sticky to relative for better positioning */
+  top: 0; /* Remove the top margin */
+  max-height: 100vh;
+}
+
+.sidebar.collapsed {
+  width: 64px !important;
+  padding: 10px 5px;
+  overflow-x: hidden;
+}
+
+.sidebar.collapsed .MuiListItemIcon-root {
+  min-width: auto;
+  margin-right: 0;
+  justify-content: center;
+}
+
+.sidebar.collapsed .MuiListItemText-root {
+  display: none;
+}
+
+/* Sidebar toggle button positioning */
+.sidebar-toggle-btn {
+  position: absolute;
+  right: -12px; /* Move it closer to the sidebar */
+  top: 84px;
+  z-index: 1500;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Adjust when sidebar is collapsed */
+.sidebar.collapsed .sidebar-toggle-btn {
+  right: -30px;
+  left: auto;
+  top: 84px;
+  transform: none;
+}
+
+/* Toggle button styling */
+.sidebar-toggle-btn button {
+  position: relative;
+  z-index: 2;
+  border: 2px solid #7C4DFF !important;
+  background-color: #7C4DFF !important;
+  width: 40px !important;
+  height: 45px !important;
+  color: white !important;
+  transition: all 0.2s ease !important;
+}
+
+.sidebar-toggle-btn button:hover {
+  border-color: white !important;
+  color: white !important;
+  background-color: #8D67FF !important;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Make sure the button stands out with a background halo */
+.sidebar-toggle-btn::before {
+  content: '';
+  position: absolute;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #7C4DFF;
+  z-index: 1;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.8);
+}
+
+/* Attention-grabbing pulse animation for the toggle button */
+@keyframes pulseAttention {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(124, 77, 255, 0.7);
+  }
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 6px rgba(124, 77, 255, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(124, 77, 255, 0);
+  }
+}
+
+/* Add an indicator tooltip for users */
+.sidebar:not(.collapsed) .sidebar-toggle-btn::after {
+  content: 'Collapse Menu';
+  position: absolute;
+  left: -120px;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.95);
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  opacity: 0;
+  transform: translateX(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+  white-space: nowrap;
+  font-weight: 500;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  z-index: 1600;
+}
+
+.sidebar.collapsed .sidebar-toggle-btn::after {
+  content: 'Expand Menu';
+  position: absolute;
+  left: -120px;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.95);
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  opacity: 0;
+  transform: translateX(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+  white-space: nowrap;
+  font-weight: 500;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  z-index: 1600;
+}
+
+.sidebar-toggle-btn:hover::after {
+  opacity: 1;
+  transform: translateX(0);
 }
 
 .active-item {
@@ -96,6 +225,44 @@
   }
 }
 
+/* Sidebar transition animation */
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+/* Animation for collapsing */
+@keyframes collapseWidth {
+  from {
+    width: 240px;
+  }
+  to {
+    width: 64px;
+  }
+}
+
+@keyframes expandWidth {
+  from {
+    width: 64px;
+  }
+  to {
+    width: 240px;
+  }
+}
+
 /* Content spacing */
 body {
   overflow-x: hidden;
@@ -105,4 +272,90 @@ body {
 .App main {
   min-height: calc(100vh - 64px);
   padding-top: 20px;
+}
+
+/* Hamburger button for collapsed sidebar */
+.sidebar-hamburger-btn {
+  position: absolute;
+  left: 12px;
+  top: 10px; /* Moved up to avoid overlap */
+  z-index: 1500;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Hamburger button styling */
+.sidebar-hamburger-btn button {
+  position: relative;
+  z-index: 2;
+  border: 2px solid #7C4DFF !important;
+  background-color: #1A1A1A !important;
+  width: 40px !important;
+  height: 40px !important;
+  color: #7C4DFF !important;
+  transition: all 0.3s ease !important;
+}
+
+.sidebar-hamburger-btn button:hover {
+  border-color: white !important;
+  color: white !important;
+  background-color: #1A1A1A !important;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Hamburger button background halo */
+.sidebar-hamburger-btn::before {
+  content: '';
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #1A1A1A;
+  z-index: 1;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.8);
+}
+
+/* Add tooltip for hamburger button */
+.sidebar-hamburger-btn::after {
+  content: 'Expand Navigation';
+  position: absolute;
+  right: -180px;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.95);
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+  white-space: nowrap;
+  font-weight: 500;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  z-index: 2000;
+}
+
+.sidebar-hamburger-btn:hover::after {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Remove the sidebar close button styling since we no longer use it */
+.sidebar-close-btn {
+  display: none;
+}
+
+.sidebar-close-btn button {
+  display: none;
+}
+
+.sidebar-close-btn button:hover {
+  display: none;
+}
+
+/* Adjust spacing for main navigation to accommodate close button */
+.sidebar:not(.collapsed) .MuiList-root.MuiList-nav {
+  margin-top: 0 !important; /* Remove excess margin */
 } 

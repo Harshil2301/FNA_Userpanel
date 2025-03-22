@@ -93,11 +93,17 @@ const theme = createTheme({
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   // Custom event listener for sidebar toggle
   useEffect(() => {
     const handleSidebarToggle = (e) => {
-      setSidebarOpen(e.detail.isOpen);
+      if (e.detail) {
+        setSidebarOpen(e.detail.isOpen);
+        if (typeof e.detail.collapsed !== 'undefined') {
+          setSidebarCollapsed(e.detail.collapsed);
+        }
+      }
     };
 
     window.addEventListener('sidebarToggle', handleSidebarToggle);
@@ -106,28 +112,35 @@ function App() {
     };
   }, []);
 
+  // Calculate sidebar width based on state
+  const getSidebarWidth = () => {
+    if (!sidebarOpen) return 0;
+    return sidebarCollapsed ? 64 : 240;
+  };
+
   return (
     <Router>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <div className="App">
           <Navbar />
-          <Box sx={{ display: 'flex', backgroundColor: '#121212', minHeight: '100vh', color: 'white', paddingTop: '64px' }}>
+          <Box sx={{ 
+            display: 'flex', 
+            backgroundColor: '#121212', 
+            minHeight: '100vh', 
+            color: 'white',
+            paddingTop: '64px', // Just enough for the navbar
+            transition: 'all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1)' // Smoother transition
+          }}>
             <Sidebar />
-            <Box 
-              component="main" 
-              sx={{ 
-                flexGrow: 1, 
-                width: '100%',
-                p: { xs: 1.5, sm: 2, md: 3 },
-                transition: 'margin-left 0.3s ease',
-                marginLeft: sidebarOpen ? { xs: 0, md: '240px' } : 0,
-                '@media (max-width: 600px)': {
-                  marginLeft: 0,
-                  width: '100%',
-                }
-              }}
-            >
+            <Box component="main" sx={{ 
+              flexGrow: 1, 
+              p: { xs: 1, sm: 2, md: 3 },
+              ml: sidebarCollapsed ? 8 : 30, // Adjust based on sidebar width
+              width: '100%',
+              transition: 'margin-left 0.4s cubic-bezier(0.25, 0.1, 0.25, 1)', // Smoother transition
+              paddingTop: 1
+            }}>
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/trending" element={<TrendingPage />} />

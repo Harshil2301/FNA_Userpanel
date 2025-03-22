@@ -16,16 +16,22 @@ import {
   Avatar, 
   Typography, 
   Divider,
-  Tooltip
+  Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { FaSearch, FaCheckCircle, FaBell, FaUpload, FaUser, FaExclamationCircle, FaVideo } from 'react-icons/fa';
+import { FaSearch, FaCheckCircle, FaBell, FaUpload, FaUser, FaExclamationCircle, FaVideo, FaTimes, FaBars } from 'react-icons/fa';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import '../../styles/Navbar.css';
 import logo from '../../assets/logo.svg';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
+import QrCode2Icon from '@mui/icons-material/QrCode2';
+import { QRCodeSVG } from 'qrcode.react';
 
 // Sample notifications data
 const notificationsData = [
@@ -90,8 +96,12 @@ const Navbar = () => {
   const [searchAnchorEl, setSearchAnchorEl] = useState(null);
   const [notificationsAnchorEl, setNotificationsAnchorEl] = useState(null);
   const [notifications, setNotifications] = useState(notificationsData);
+  const [qrDialogOpen, setQrDialogOpen] = useState(false);
+  const [aboutQrDialogOpen, setAboutQrDialogOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isSmallOrMedium = useMediaQuery(theme.breakpoints.down('lg'));
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -170,6 +180,40 @@ const Navbar = () => {
     ));
   };
 
+  // Handle QR dialog open
+  const handleQrDialogOpen = () => {
+    setQrDialogOpen(true);
+  };
+
+  // Handle QR dialog close
+  const handleQrDialogClose = () => {
+    setQrDialogOpen(false);
+  };
+
+  // Handle About QR dialog open
+  const handleAboutQrDialogOpen = () => {
+    setAboutQrDialogOpen(true);
+  };
+
+  // Handle About QR dialog close
+  const handleAboutQrDialogClose = () => {
+    setAboutQrDialogOpen(false);
+  };
+
+  // Handle sidebar toggle
+  const handleToggleSidebar = () => {
+    const newState = !sidebarOpen;
+    setSidebarOpen(newState);
+    
+    // Add a slight delay before dispatching the event for smoother animation
+    setTimeout(() => {
+      // Dispatch custom event to notify Sidebar component
+      window.dispatchEvent(new CustomEvent('sidebarToggle', { 
+        detail: { isOpen: newState }
+      }));
+    }, 10);
+  };
+
   return (
     <AppBar 
       position="fixed" 
@@ -196,68 +240,118 @@ const Navbar = () => {
         maxWidth: '100%',
         px: { xs: 2, sm: 3, md: 4 },
       }}>
-        {/* Logo on left */}
-        <Box sx={{ display: 'flex', alignItems: 'center', width: isMobile ? '30%' : '20%', ml: { xs: 5, sm: 5 } }}>
-          <Link to="/" className="logo-link">
-            <img src={logo} alt="FNA.ai Logo" className="navbar-logo" />
+        {/* Logo on left with hamburger menu */}
+        <Box sx={{ display: 'flex', alignItems: 'center', width: isMobile ? '30%' : '20%' }}>
+          {isSmallOrMedium && (
+            <IconButton 
+              edge="start"
+              color="inherit" 
+              aria-label="menu"
+              onClick={handleToggleSidebar}
+              sx={{ 
+                mr: 1.5,
+                p: 1,
+                ml: { xs: 1, sm: 0 },
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                '&:hover': {
+                  backgroundColor: 'rgba(255,255,255,0.08)',
+                }
+              }}
+            >
+              {sidebarOpen ? <FaTimes size={18} /> : <FaBars size={18} />}
+            </IconButton>
+          )}
+          
+          <Link to="/" className="logo-link" style={{ display: 'flex', alignItems: 'center' }}>
+            <img 
+              src={logo} 
+              alt="FNA.ai Logo" 
+              className="navbar-logo" 
+              style={{ 
+                height: isSmallOrMedium ? '28px' : '32px', 
+                width: 'auto',
+                marginTop: '0px'
+              }}
+            />
           </Link>
         </Box>
 
-        {/* Search in center - hidden on mobile */}
-        {!isMobile && (
+        {/* Search Bar - Center/Responsive - Hide on small screens */}
+        <Box 
+          sx={{ 
+            display: { xs: 'none', md: 'flex' }, // Hide on xs and sm screens, show from md up
+            justifyContent: 'center', 
+            alignItems: 'center',
+            flex: 1,
+            position: 'relative',
+            mx: { xs: 1, sm: 2, md: 3 },
+            maxWidth: { xs: '100%', sm: '450px', md: '500px', lg: '550px' }, 
+            width: '100%',
+            '@media (min-width: 900px) and (max-width: 1110px)': {
+              maxWidth: '350px', // Reduce search bar width in the problematic range
+            }
+          }}
+        >
           <Box 
+            className={`search-container ${searchFocused ? 'search-focused' : ''}`}
             sx={{ 
-              flexGrow: 1, 
-              display: 'flex', 
-              justifyContent: 'center', 
-              width: '60%'
+              maxWidth: '600px', 
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              borderRadius: '20px',
+              backgroundColor: searchFocused ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.1)',
+              padding: '2px 16px',
+              border: '1px solid',
+              borderColor: searchFocused ? 'rgba(124, 77, 255, 0.3)' : 'rgba(255,255,255,0.05)',
+              boxShadow: searchFocused ? '0 0 0 2px rgba(124, 77, 255, 0.2)' : 'none',
+              transition: 'all 0.3s ease',
             }}
           >
-            <Box 
-              className={`search-container ${searchFocused ? 'search-focused' : ''}`}
-              sx={{ 
-                maxWidth: '600px', 
+            <FaSearch style={{ color: 'rgba(255,255,255,0.6)', marginRight: '8px' }} />
+            <InputBase
+              placeholder="Search News"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleSearch}
+              onFocus={() => setSearchFocused(true)}
+              onBlur={() => setSearchFocused(false)}
+              sx={{
+                color: 'white',
                 width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                borderRadius: '20px',
-                backgroundColor: searchFocused ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.1)',
-                padding: '2px 16px',
-                border: '1px solid',
-                borderColor: searchFocused ? 'rgba(124, 77, 255, 0.3)' : 'rgba(255,255,255,0.05)',
-                boxShadow: searchFocused ? '0 0 0 2px rgba(124, 77, 255, 0.2)' : 'none',
-                transition: 'all 0.3s ease',
+                '& input': {
+                  padding: '8px 0',
+                }
               }}
-            >
-              <FaSearch style={{ color: 'rgba(255,255,255,0.6)', marginRight: '8px' }} />
-              <InputBase
-                placeholder="Search News"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={handleSearch}
-                onFocus={() => setSearchFocused(true)}
-                onBlur={() => setSearchFocused(false)}
-                sx={{
-                  color: 'white',
-                  width: '100%',
-                  '& input': {
-                    padding: '8px 0',
-                  }
-                }}
-              />
-            </Box>
+            />
           </Box>
-        )}
+        </Box>
 
-        {/* Right section */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, justifyContent: 'flex-end', width: isMobile ? '70%' : '20%' }}>
+        {/* Right Actions */}
+        <Box 
+          sx={{ 
+            display: 'flex', 
+            justifyContent: 'flex-end', 
+            alignItems: 'center',
+            gap: { xs: 0.5, sm: 1, md: 1.5 }, 
+            width: { xs: '45%', sm: '45%', md: '25%', lg: '20%' }, // Increased width on small screens
+            ml: { xs: 'auto', md: 0 }, // Auto margin on small screens
+            '@media (min-width: 900px) and (max-width: 1110px)': {
+              width: '30%',
+              gap: 1,
+            }
+          }}
+        >
           {isMobile ? (
             <>
-              {/* Login button - also visible on mobile */}
+              {/* Get Web button - also visible on mobile */}
               <Button 
                 variant="contained" 
                 color="primary"
                 size="small"
+                onClick={handleQrDialogOpen}
                 sx={{ 
                   borderRadius: '20px',
                   textTransform: 'none',
@@ -267,13 +361,19 @@ const Navbar = () => {
                   fontWeight: 600,
                   minWidth: 0,
                   ml: 'auto', // Push to the right
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  border: '2px solid #8e60ff',
                   '&:hover': {
                     transform: 'translateY(-2px)',
                     boxShadow: '0 4px 12px rgba(124, 77, 255, 0.4)',
+                    border: '2px solid #a280ff',
                   }
                 }}
               >
-                Log In
+                <QrCode2Icon sx={{ fontSize: 16 }} />
+                Get Web
               </Button>
               
               {/* Notification icon - also visible on mobile */}
@@ -304,8 +404,16 @@ const Navbar = () => {
                 className="icon-button" 
                 aria-label="search"
                 onClick={handleMobileSearchClick}
+                sx={{
+                  color: 'white',
+                  p: 1,
+                  '&:hover': {
+                    backgroundColor: 'rgba(255,255,255,0.08)',
+                    transform: 'scale(1.05)',
+                  }
+                }}
               >
-                <FaSearch />
+                <FaSearch size={16} />
               </IconButton>
 
               {/* Mobile search popover */}
@@ -366,31 +474,45 @@ const Navbar = () => {
             <>
               {/* Right section icons */}
               <Box sx={{ display: 'flex', alignItems: 'center', ml: 2 }}>
-                {/* Login button */}
-                <Button 
-                  variant="contained" 
+                {/* Get Web button */}
+                <Button
+                  variant="contained"
                   color="primary"
-                  sx={{ 
-                    borderRadius: '20px',
-                    textTransform: 'none',
-                    px: 2,
-                    py: 0.5,
-                    fontWeight: 600,
+                  startIcon={<QrCode2Icon />}
+                  onClick={handleQrDialogOpen}
+                  className="get-web-btn"
+                  size={isMobile ? "small" : "medium"}
+                  sx={{
+                    backgroundColor: '#7C4DFF',
+                    fontSize: { xs: '0.70rem', sm: '0.75rem', md: '0.85rem' },
+                    px: { xs: 1, sm: 1.5, md: 2 },
+                    py: { xs: 0.5, sm: 0.75 },
+                    borderRadius: '30px',
+                    fontWeight: 'bold',
+                    whiteSpace: 'nowrap',
                     '&:hover': {
-                      transform: 'translateY(-2px)',
-                      boxShadow: '0 4px 12px rgba(124, 77, 255, 0.4)',
+                      backgroundColor: '#651fff',
+                      boxShadow: '0 4px 20px rgba(124, 77, 255, 0.4)',
+                      transform: 'translateY(-2px)'
+                    },
+                    '&:active': {
+                      transform: 'translateY(0)'
+                    },
+                    textTransform: 'none',
+                    display: { xs: 'none', sm: 'flex' },
+                    '@media (min-width: 900px) and (max-width: 1110px)': {
+                      px: 1.5, // Reduce padding
+                      fontSize: '0.75rem', // Reduce font size
+                      minWidth: '90px', // Ensure minimum width
                     }
                   }}
                 >
-                  Log In
+                  Get Web
                 </Button>
                 
                 {/* About button */}
                 <Button 
-                  component="a"
-                  href="https://fnaai-l.vercel.app/"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  onClick={handleAboutQrDialogOpen}
                   sx={{ 
                     color: 'white',
                     fontWeight: 500,
@@ -641,6 +763,268 @@ const Navbar = () => {
           </Button>
         </Box>
       </Popover>
+
+      {/* QR Code Dialog */}
+      <Dialog
+        open={qrDialogOpen}
+        onClose={handleQrDialogClose}
+        aria-labelledby="qr-code-dialog-title"
+        PaperProps={{
+          sx: {
+            backgroundColor: '#1A1A1A',
+            borderRadius: '12px',
+            border: '1px solid rgba(255,255,255,0.1)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+            maxWidth: '400px',
+            width: '100%',
+            overflow: 'hidden'
+          }
+        }}
+      >
+        <Box sx={{ position: 'relative', padding: '16px' }}>
+          <IconButton
+            onClick={handleQrDialogClose}
+            sx={{
+              position: 'absolute',
+              right: 8,
+              top: 8,
+              color: 'rgba(255,255,255,0.7)',
+              '&:hover': {
+                color: 'white',
+                backgroundColor: 'rgba(255,255,255,0.1)'
+              }
+            }}
+          >
+            <FaTimes />
+          </IconButton>
+          
+          <DialogTitle 
+            id="qr-code-dialog-title"
+            sx={{ 
+              textAlign: 'center', 
+              fontWeight: 'bold',
+              color: 'white',
+              pt: 3,
+              pb: 1
+            }}
+          >
+            Get the FNA.ai Web App
+          </DialogTitle>
+          
+          <DialogContent sx={{ textAlign: 'center', p: 3 }}>
+            <Typography variant="body2" sx={{ mb: 3, color: 'rgba(255,255,255,0.7)' }}>
+              Scan this QR code to access the FNA.ai web app on your device
+            </Typography>
+            
+            <Box 
+              sx={{ 
+                backgroundColor: 'black', 
+                p: 3, 
+                borderRadius: '8px',
+                display: 'inline-block',
+                mb: 2,
+                position: 'relative',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
+              }}
+            >
+              <QRCodeSVG 
+                value="https://fna-newzify.vercel.app/" 
+                size={200} 
+                bgColor={"#000000"} 
+                fgColor={"#ffffff"} 
+                level={"H"} 
+                includeMargin={false}
+              />
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  width: '44px',
+                  height: '44px',
+                  backgroundColor: 'white',
+                  borderRadius: '8px',
+                  padding: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 0 8px rgba(255,255,255,0.5)',
+                  border: '2px solid white'
+                }}
+              >
+                <img 
+                  src={`${process.env.PUBLIC_URL}/qr.png`} 
+                  alt="FNA.ai Logo" 
+                  style={{ 
+                    width: '100%', 
+                    height: '100%', 
+                    objectFit: 'contain'
+                  }} 
+                />
+              </Box>
+            </Box>
+            
+            <Typography 
+              variant="caption" 
+              sx={{ 
+                display: 'block', 
+                color: 'rgba(255,255,255,0.5)',
+                fontSize: '0.8rem',
+                mt: 2
+              }}
+            >
+              Or visit <Box 
+                component="a" 
+                href="https://fna-newzify.vercel.app/" 
+                target="_blank"
+                rel="noopener noreferrer"
+                sx={{ 
+                  color: '#7C4DFF', 
+                  fontWeight: 'bold',
+                  textDecoration: 'none',
+                  '&:hover': {
+                    textDecoration: 'underline'
+                  }
+                }}
+              >
+                https://fna-newzify.vercel.app/
+              </Box> on your device
+            </Typography>
+          </DialogContent>
+        </Box>
+      </Dialog>
+
+      {/* QR Code Dialog for About */}
+      <Dialog
+        open={aboutQrDialogOpen}
+        onClose={handleAboutQrDialogClose}
+        aria-labelledby="about-qr-code-dialog-title"
+        PaperProps={{
+          sx: {
+            backgroundColor: '#1A1A1A',
+            borderRadius: '12px',
+            border: '1px solid rgba(255,255,255,0.1)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+            maxWidth: '400px',
+            width: '100%',
+            overflow: 'hidden'
+          }
+        }}
+      >
+        <Box sx={{ position: 'relative', padding: '16px' }}>
+          <IconButton
+            onClick={handleAboutQrDialogClose}
+            sx={{
+              position: 'absolute',
+              right: 8,
+              top: 8,
+              color: 'rgba(255,255,255,0.7)',
+              '&:hover': {
+                color: 'white',
+                backgroundColor: 'rgba(255,255,255,0.1)'
+              }
+            }}
+          >
+            <FaTimes />
+          </IconButton>
+          
+          <DialogTitle 
+            id="about-qr-code-dialog-title"
+            sx={{ 
+              textAlign: 'center', 
+              fontWeight: 'bold',
+              color: 'white',
+              pt: 3,
+              pb: 1
+            }}
+          >
+            About FNA.ai
+          </DialogTitle>
+          
+          <DialogContent sx={{ textAlign: 'center', p: 3 }}>
+            <Typography variant="body2" sx={{ mb: 3, color: 'rgba(255,255,255,0.7)' }}>
+              Scan this QR code to visit the About page on your device
+            </Typography>
+            
+            <Box 
+              sx={{ 
+                backgroundColor: 'black', 
+                p: 3, 
+                borderRadius: '8px',
+                display: 'inline-block',
+                mb: 2,
+                position: 'relative',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
+              }}
+            >
+              <QRCodeSVG 
+                value="https://fnaai-l.vercel.app/" 
+                size={200} 
+                bgColor={"#000000"} 
+                fgColor={"#ffffff"} 
+                level={"H"} 
+                includeMargin={false}
+              />
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  width: '44px',
+                  height: '44px',
+                  backgroundColor: 'white',
+                  borderRadius: '8px',
+                  padding: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 0 8px rgba(255,255,255,0.5)',
+                  border: '2px solid white'
+                }}
+              >
+                <img 
+                  src={`${process.env.PUBLIC_URL}/qr.png`} 
+                  alt="FNA.ai Logo" 
+                  style={{ 
+                    width: '100%', 
+                    height: '100%', 
+                    objectFit: 'contain'
+                  }} 
+                />
+              </Box>
+            </Box>
+            
+            <Typography 
+              variant="caption" 
+              sx={{ 
+                display: 'block', 
+                color: 'rgba(255,255,255,0.5)',
+                fontSize: '0.8rem',
+                mt: 2
+              }}
+            >
+              Or visit <Box 
+                component="a" 
+                href="https://fnaai-l.vercel.app/" 
+                target="_blank"
+                rel="noopener noreferrer"
+                sx={{ 
+                  color: '#7C4DFF', 
+                  fontWeight: 'bold',
+                  textDecoration: 'none',
+                  '&:hover': {
+                    textDecoration: 'underline'
+                  }
+                }}
+              >
+                https://fnaai-l.vercel.app/
+              </Box> on your device
+            </Typography>
+          </DialogContent>
+        </Box>
+      </Dialog>
     </AppBar>
   );
 };
