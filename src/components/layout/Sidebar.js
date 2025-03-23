@@ -123,9 +123,9 @@ const Sidebar = () => {
       action: handleAboutQrDialogOpen,
       isQrCode: true
     },
+    { name: 'Saved', icon: <FaBookmark size={20} />, path: '/saved', badge: 5 },
     { name: 'Contact', icon: <FaEnvelope size={20} />, path: 'https://fnaai.vercel.app/contactsupport' },
     { name: 'Settings', icon: <FaCog size={20} />, path: '/settings' },
-    { name: 'Saved', icon: <FaBookmark size={20} />, path: '/saved', badge: 5 },
   ];
   
   return (
@@ -360,14 +360,18 @@ const Sidebar = () => {
         {/* Always show categories and resources for small/medium screens, only hide in collapsed large screens */}
         {(!collapsed || !isLargeScreen) && (
           <>
-            <Divider sx={{ borderColor: 'rgba(255,255,255,0.1)', mt: 1, mb: 1 }} />
+            <Divider sx={{ 
+              borderColor: 'rgba(255,255,255,0.1)', 
+              mt: isLargeScreen ? 0.5 : 1, 
+              mb: isLargeScreen ? 0.5 : 1 
+            }} />
             
             <Typography 
               variant="subtitle2" 
               component="div" 
               sx={{ 
                 px: 2, 
-                py: 1, 
+                py: isLargeScreen ? 0.5 : 1, 
                 color: 'rgba(255,255,255,0.5)',
                 fontSize: '0.8rem',
                 textTransform: 'uppercase',
@@ -381,9 +385,10 @@ const Sidebar = () => {
             </Typography>
             
             <List component="nav" sx={{ 
-              p: 1, 
+              p: isLargeScreen ? 0.5 : 1, 
               flexGrow: 0,
               overflowY: 'auto',
+              maxHeight: '30vh',
               opacity: showSidebar ? 1 : 0,
               transition: 'opacity 0.3s ease',
               transitionDelay: showSidebar ? '0.2s' : '0s',
@@ -462,7 +467,11 @@ const Sidebar = () => {
               ))}
             </List>
             
-            <Divider sx={{ borderColor: 'rgba(255,255,255,0.1)', mt: 1, mb: 1 }} />
+            <Divider sx={{ 
+              borderColor: 'rgba(255,255,255,0.1)', 
+              mt: isLargeScreen ? 0.5 : 1, 
+              mb: isLargeScreen ? 0.5 : 1 
+            }} />
             
             <Typography 
               variant="subtitle2" 
@@ -483,7 +492,7 @@ const Sidebar = () => {
             </Typography>
             
             <List component="nav" sx={{ 
-              p: 1, 
+              p: isLargeScreen ? 0.5 : 1, 
               opacity: showSidebar ? 1 : 0,
               transition: 'opacity 0.3s ease',
               transitionDelay: showSidebar ? '0.3s' : '0s',
@@ -666,30 +675,6 @@ const Sidebar = () => {
               ))}
             </List>
           </>
-        )}
-
-        {/* Close button for mobile - add a way to close the sidebar on mobile */}
-        {isMobile && (
-          <Box sx={{ 
-            p: 2, 
-            display: 'flex', 
-            justifyContent: 'center', 
-            mt: 2,
-            mb: 2 
-          }}>
-            <IconButton
-              onClick={handleToggleSidebar}
-              sx={{
-                color: 'white',
-                backgroundColor: 'rgba(124, 77, 255, 0.2)',
-                '&:hover': {
-                  backgroundColor: 'rgba(124, 77, 255, 0.3)',
-                }
-              }}
-            >
-              <FaTimes size={18} />
-            </IconButton>
-          </Box>
         )}
       </Box>
 

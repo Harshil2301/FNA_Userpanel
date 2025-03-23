@@ -162,54 +162,44 @@
 
 @media (max-width: 600px) {
   .sidebar {
-    width: 240px !important; /* Make sidebar full width in mobile */
+    overflow-y: auto !important; /* Force scrolling on small screens */
+    height: calc(100vh - 64px); /* Ensure the sidebar takes full height minus the navbar */
+    max-height: calc(100vh - 64px);
+    position: fixed;
+    display: flex !important;
+    flex-direction: column !important;
+    width: 240px !important; /* Make sidebar width fixed on mobile */
     z-index: 1300; /* Ensure it's above other content */
   }
   
-  .sidebar > div:not(:first-child) {
-    display: none;
-  }
-  
   .sidebar > div:first-child {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
+    flex-direction: column !important;
+    height: auto !important;
+    align-items: flex-start !important;
     width: 100%;
     padding: 0 !important;
   }
   
   .sidebar .MuiList-root.MuiList-nav {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    width: 100%;
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
     padding: 5px !important;
   }
   
   .sidebar .MuiListItem-root {
-    width: auto;
-    flex: 1;
-    justify-content: center;
-    margin-bottom: 0 !important;
-    padding: 4px 0;
-  }
-  
-  .sidebar .MuiListItemIcon-root {
-    min-width: auto;
-    margin-right: 0 !important;
-    justify-content: center;
-  }
-  
-  /* Add space between section icons and names for small screens */
-  .sidebar .MuiListItem-button {
+    width: 100% !important;
+    justify-content: flex-start !important;
+    margin-bottom: 8px !important;
     padding: 8px 12px !important;
   }
   
-  .sidebar:not(.collapsed) .MuiListItemIcon-root {
+  .sidebar .MuiListItemIcon-root {
+    min-width: 40px !important;
     margin-right: 16px !important;
   }
   
-  .sidebar:not(.collapsed) .MuiListItemText-primary {
+  .sidebar .MuiListItemText-primary {
     font-size: 15px !important;
   }
 }

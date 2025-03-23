@@ -240,7 +240,7 @@ const Navbar = ({ onSidebarToggle }) => {
           display: 'flex', 
           alignItems: 'center', 
           width: isMobile ? '30%' : '20%',
-          gap: 1 // Add consistent spacing between hamburger and logo
+          gap: { xs: 0.5, sm: 1 } // Reduced gap for small screens
         }}>
           {isSmallOrMedium && (
             <Tooltip title={sidebarOpen ? "Close Navigation" : "Open Navigation"}>
@@ -250,7 +250,7 @@ const Navbar = ({ onSidebarToggle }) => {
                 aria-label={sidebarOpen ? "close menu" : "open menu"}
                 onClick={handleToggleSidebar}
                 sx={{ 
-                  mr: { xs: 2, sm: 3 },
+                  mr: { xs: 0.5, sm: 2, md: 3 },
                   ml: { xs: 2, sm: 1 },
                   display: {xs: 'flex', lg: 'none'},
                   color: 'white',
@@ -273,11 +273,11 @@ const Navbar = ({ onSidebarToggle }) => {
           
           <Link to="/" className="logo-link" style={{ display: 'flex', alignItems: 'center' }}>
             <img 
-              src={useMediaQuery(theme.breakpoints.down('sm')) ? `${process.env.PUBLIC_URL}/short_logo.svg` : logo}
+              src={logo}
               alt="FNA.ai Logo" 
               className="navbar-logo" 
               style={{ 
-                height: isSmallOrMedium ? '28px' : '32px', 
+                height: isSmallOrMedium ? '24px' : '32px', 
                 width: 'auto',
                 marginTop: '0px'
               }} 
