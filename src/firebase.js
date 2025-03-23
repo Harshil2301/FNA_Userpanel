@@ -56,7 +56,7 @@ export const fetchVideos = async (limitCount = 6, category = null) => {
 export const getVideoUrl = (videoHash) => {
   if (!videoHash) return null;
   
-  const ipfsGateway = 'https://brown-passive-cattle-71.mypinata.cloud/ipfs/';
+  const ipfsGateway = 'https://jade-quick-haddock-516.mypinata.cloud/ipfs/';
   return `${ipfsGateway}${videoHash.split('/').pop()}`;
 };
 

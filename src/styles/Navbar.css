@@ -254,12 +254,33 @@
   .MuiToolbar-root {
     padding-left: 8px !important;
     padding-right: 8px !important;
-    gap: 8px;
   }
   
   .MuiIconButton-root {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    padding: 6px !important;
+  }
+  
+  .icon-button {
+    width: 32px !important;
+    height: 32px !important;
+  }
+  
+  .navbar-logo {
+    height: 20px;
+  }
+  
+  .nav-link {
+    padding: 6px 8px;
+    font-size: 0.85rem;
+  }
+  
+  /* Reduce search bar size */
+  .search-container {
+    height: 38px !important;
+  }
+  
+  /* Add left margin to hamburger button on small screens */
+  .MuiToolbar-root .MuiIconButton-root:first-of-type {
+    margin-left: 8px !important;
   }
 } 

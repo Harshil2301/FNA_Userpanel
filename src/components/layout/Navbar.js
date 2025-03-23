@@ -251,7 +251,7 @@ const Navbar = ({ onSidebarToggle }) => {
                 onClick={handleToggleSidebar}
                 sx={{ 
                   mr: { xs: 2, sm: 3 },
-                  ml: { xs: 1.5, sm: 1 },
+                  ml: { xs: 2, sm: 1 },
                   display: {xs: 'flex', lg: 'none'},
                   color: 'white',
                   transition: 'transform 0.3s ease',
@@ -280,41 +280,32 @@ const Navbar = ({ onSidebarToggle }) => {
                 height: isSmallOrMedium ? '28px' : '32px', 
                 width: 'auto',
                 marginTop: '0px'
-              }}
+              }} 
             />
           </Link>
         </Box>
 
-        {/* Search Bar - Center/Responsive - Hide on small screens */}
-        <Box 
-          sx={{ 
-            display: { xs: 'none', md: 'flex' }, // Hide on xs and sm screens, show from md up
-            justifyContent: 'center', 
-            alignItems: 'center',
-            flex: 1,
-            position: 'relative',
-            mx: { xs: 1, sm: 2, md: 3 },
-            maxWidth: { xs: '100%', sm: '450px', md: '500px', lg: '550px' }, 
-            width: '100%',
-            '@media (min-width: 900px) and (max-width: 1110px)': {
-              maxWidth: '350px', // Reduce search bar width in the problematic range
-            }
-          }}
-        >
+        {/* Search bar - center aligned */}
+        <Box sx={{ 
+          width: { xs: '40%', sm: '45%', md: '50%' }, 
+          display: { xs: isMobile && !mobileSearchOpen ? 'none' : 'flex' },
+          position: 'relative'
+        }}>
           <Box 
             className={`search-container ${searchFocused ? 'search-focused' : ''}`}
-            sx={{ 
-              maxWidth: '600px', 
-              width: '100%',
+            sx={{
               display: 'flex',
+              width: '100%',
               alignItems: 'center',
-              borderRadius: '20px',
-              backgroundColor: searchFocused ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.1)',
-              padding: '2px 16px',
-              border: '1px solid',
-              borderColor: searchFocused ? 'rgba(124, 77, 255, 0.3)' : 'rgba(255,255,255,0.05)',
-              boxShadow: searchFocused ? '0 0 0 2px rgba(124, 77, 255, 0.2)' : 'none',
-              transition: 'all 0.3s ease',
+              backgroundColor: 'rgba(255,255,255,0.08)',
+              color: 'rgba(255,255,255,0.8)',
+              borderRadius: '8px',
+              py: { xs: 0.5, sm: 0.75, md: 1 }, // Reduced padding for small screens
+              px: { xs: 1, sm: 1.5, md: 2 }, // Reduced padding for small screens
+              height: { xs: '38px', sm: '40px', md: '42px' }, // Reduced height for small screens
+              '&:hover': {
+                backgroundColor: 'rgba(255,255,255,0.12)'
+              }
             }}
           >
             <FaSearch style={{ color: 'rgba(255,255,255,0.6)', marginRight: '8px' }} />
